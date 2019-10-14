@@ -4,6 +4,10 @@
 *.dll
 *.so
 *.dylib
+# Cert requests, keys and certs
+*.crs
+*.key
+*.crt
 
 # Test binary, build with `go test -c`
 *.test

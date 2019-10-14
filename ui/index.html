@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>TARA-Mock</title>
+</head>
+<body>
+  <h1>TARA-Mock</h1>
+  <h3>Name : {{.Name}}   </h3> 
+  <h3>Email : {{.Email}} </h3> 
+  <h3>Phone : {{.Phone}} </h3> 
+<div>
+  <form action="/back" method="POST">     
+    <label>isikukood:</label>
+    <input name="idcode" type="text" value="">
+    <label>eesnimi:</label>
+    <input name="firstname" type="text" value="">
+    <label>perekonnanimi:</label>
+    <input name="lastname" type="text" value="">
+    <input type="submit" value="submit" />
+  </form>
+</div>
+</body>
+</html>
