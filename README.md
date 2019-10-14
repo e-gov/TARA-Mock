@@ -10,12 +10,10 @@ TARA-Mock ühendatakse klientrakenduse külge täpselt niisamuti nagu TARA külg
 **Käivitamine**. `go run cmd/TARA-Mock/main.go`
 
 **Seadistamine**. Sea failis `main.go` järgmised väärtused:
-- host, kuhu TARA-Mock on paigaldatud
-- klientrakendusse tagasisuunamise aadress
+- `returnURL` - klientrakendusse tagasisuunamise aadress
 
-Nt:
+Nt, kui TARA-Mock ja klientrakendus on samas masinas:
 ```
-const taraMockHost = "localhost"
 const returnURL = "https://localhost:8080/client/return"
 ```
 Genereeri ja sea TARA-Mock HTTPS serveri serdid. Sertide genereerimise näiteskript on failis `keys/genkeys.sh`.
