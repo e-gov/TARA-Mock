@@ -7,15 +7,21 @@ TARA-Mock on rakendus, mis etendab TARA autentimist.
 
 TARA-Mock pakub samu otspunkte kui TARA, s.t TARA-Mock ja TARA on üksteisega vahetatavad lihtsa seadistusega.
 
-**Käivitamine**. `go run cmd/TARA-Mock/main.go`
+TARA-Mock juures on ka klientrakenduse näidis.
 
-**Seadistamine**. Sea failis `main.go` järgmised väärtused:
-- `returnURL` - klientrakendusse tagasisuunamise aadress
+## TARA-Mock
 
-Nt, kui TARA-Mock ja klientrakendus on samas masinas:
+TARA-Mock töötab pordil 8080.
+
+**Käivitamine**.
+
 ```
-const returnURL = "https://localhost:8080/client/return"
+cd service
+go run .
 ```
+
+**Seadistamine**.
+
 Genereeri ja sea TARA-Mock HTTPS serveri serdid. Sertide genereerimise näiteskript on failis `keys/genkeys.sh`.
 
 Etteantud identiteedid on koodi sissekirjutatud TARA-Mock koodi. Muuda identiteedid oma vajadustele vastavaks.
@@ -32,3 +38,20 @@ Etteantud identiteedid on koodi sissekirjutatud TARA-Mock koodi. Muuda identitee
 Nt, TARA-Mock kasutamisel oma masinas:
 
 `https://localhost:8080/oidc/token` - identsustõendi väljastamine
+
+## Klientrakenduse näidis
+
+**Otspunktid**:
+- `/health` - elutukse
+- `/` - avaleht; kasutaja saab sealt minna TARA-Mock-i autentima
+- `/login` - kasutaja suunamine TARA-Mock-i autentima
+- `/return` - autentimiselt tagasi suunatud kasutaja vastuvõtmine, identsustõendi pärimine TARA-Mock-st ja sisselogimise lõpuleviimine 
+
+**Seadistamine**: Klientrakenduse näidis töötab lokaalses masinas, pordil 8081. Genereeri ja sea TARA-Mock HTTPS serveri serdid. Sertide genereerimise näiteskript on failis `keys/genkeys.sh`.
+
+**Käivitamine**:
+
+```
+cd service
+go run .
+```

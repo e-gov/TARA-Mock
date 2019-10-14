@@ -28,10 +28,9 @@ func main() {
 	http.HandleFunc("/back", SendUserBack)
 	http.HandleFunc("/oidc/token", SendIdentityToken)
 	http.HandleFunc("/oidc/jwks", SendKey)
-	http.HandleFunc("/client/return", RequestIdentityToken)
 
 	// Käivita HTTPS server
-	log.Println("** TARA-Makett käivitatud pordil 8080 **")
+	log.Println("** TARA-Mock käivitatud pordil 8080 **")
 	err := http.ListenAndServeTLS(
 		":8080",
 		"keys/https-server.crt",
@@ -42,19 +41,19 @@ func main() {
 	}
 }
 
-// healthCheck pakub elutukset.
+// healthCheck pakub elutukset (/health).
 func healthCheck(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
-	io.WriteString(w, `{"status":"ok"}`)
+	io.WriteString(w, `{"name":"TARA-Mock", "status":"ok"}`)
 }
 
-// LandingPage annab teavet TARA-Mock-i kohta.
+// LandingPage annab teavet TARA-Mock-i kohta (/).
 func LandingPage(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "text/html")
 	fmt.Fprint(w, "TARA-Mock")
 }
 
-// AuthenticateUser etendab kasutaja autentimise dialoogi.
+// AuthenticateUser etendab kasutaja autentimise dialoogi (/oidc/authorize).
 func AuthenticateUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	p := filepath.Join("ui", "index.html")
@@ -68,10 +67,11 @@ func AuthenticateUser(w http.ResponseWriter, r *http.Request) {
 		Name:  "John Doe",
 		Email: "johndoe@gmail.com",
 		Phone: "000099999"}
+
 	t.Execute(w, user)
 }
 
-// SendUserBack saadab kasutaja klientrakendusse tagasi.
+// SendUserBack saadab kasutaja klientrakendusse tagasi (/client/return).
 func SendUserBack(w http.ResponseWriter, r *http.Request) {
 	// Genereeri volituskood
 	c := PseudoUUID()
@@ -83,21 +83,13 @@ func SendUserBack(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, ru, 301)
 }
 
-// SendIdentityToken teostab OIDC identsustõendi otspunkti.
+// SendIdentityToken väljastab klientrakendusele identsustõendi (teostab sellega OIDC identsustõendi otspunkti /oidc/token).
 func SendIdentityToken(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	fmt.Fprint(w, "TARA-Mock - token")
 }
 
-// RequestIdentityToken teostab klientrakenduses identsustõendi küsimist
-func RequestIdentityToken(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	// Kuva saadud volituskood
-	fmt.Printf("Req: %s %s\n", r.Host, r.URL.Path)
-	fmt.Fprint(w, "Klientrakendus - küsi identsustõend")
-}
-
-// SendKey teostab OIDC avaliku võtme otspunkti.
+// SendKey väljastab klientrakendusele identsustõendi allkirjastamisel kasutatavale privaatvõtmele vastava avaliku võtme (sellega teostab OIDC avaliku võtme otspunkti oidc/jwks).
 func SendKey(w http.ResponseWriter, r *http.Request) {
 
 }
