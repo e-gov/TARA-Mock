@@ -8,6 +8,8 @@
 *.crs
 *.key
 *.crt
+*.pem
+*.srl
 
 # Test binary, build with `go test -c`
 *.test
