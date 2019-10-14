@@ -5,7 +5,7 @@ TARA-Mock on rakendus, mis etendab TARA autentimist.
 
 **Kasutusstsenaarium**. TARA-Mock on mõeldud kasutamiseks siis, kui TARA testteenuse võimalused jäävad klientrakenduse funktsionaalsuste testimisel napiks. TARA testteenuse abil saab autentida väga väikese hulga TARA poolt ette antud testkasutajatega. TARA-Mock seevastu võimaldab kasutajal valida autentimise dialoogis identiteet kas TARA-Mock seadistuses etteantud identiteetide hulgast või sisestada ise isikukood, ees- ja perekonnanimi, mille all soovitakse sisse logida s.t logida sisse suvalise identiteediga.
 
-TARA-Mock ühendatakse klientrakenduse külge täpselt niisamuti nagu TARA külge.
+TARA-Mock pakub samu otspunkte kui TARA, s.t TARA-Mock ja TARA on üksteisega vahetatavad lihtsa seadistusega.
 
 **Käivitamine**. `go run cmd/TARA-Mock/main.go`
 
@@ -29,6 +29,6 @@ Etteantud identiteedid on koodi sissekirjutatud TARA-Mock koodi. Muuda identitee
 - `/token` - identsustõendi väljastamine
 - `/oidc/jwks` - identsustõendi avalik võti
 
-Nt, kasutamisel oma masinas:
+Nt, TARA-Mock kasutamisel oma masinas:
 
 `https://localhost:8080/oidc/token` - identsustõendi väljastamine
