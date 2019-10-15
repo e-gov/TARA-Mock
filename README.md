@@ -12,15 +12,15 @@ TARA-Mock juures on ka klientrakenduse näidis.
 
 1) Suunamine autentimisele
 
-<img src="docs/Rakendus_01.PNG" width="700" style="border: 1px solid black;">
+<img src="docs/Rakendus_01.PNG" style="width: 700px; border: 1px solid black;">
 
 2) Autentimisdialoog
 
-<img src="docs/TARA-Mock_01.PNG" width="700" style="border: 1px solid black;">
+<img src="docs/TARA-Mock_01.PNG" style="width: 700px; border: 1px solid black;">
 
 3) Tagasi autentimiselt
 
-<img src="docs/Rakendus_02.PNG" width="700" style="border: 1px solid black;">
+<img src="docs/Rakendus_02.PNG" style="width: 700px; border: 1px solid black;">
 
 ## TARA-Mock
 
