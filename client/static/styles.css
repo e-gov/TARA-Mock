@@ -1,0 +1,210 @@
+body {
+  max-width: 60em;
+  margin: 0 0; 
+  padding: 0.6em 1.5em 6em 2em; 
+}
+
+body, input {
+  font-family: 'Segoe UI', Arial, serif;
+  font-size: 16px; 
+  color: #24292E !important;
+  line-height: 1.5 !important;
+}  
+
+.pais {
+  font-family: 'Anonymous Pro', sans-serif;
+  font-size: 13pt; margin-bottom: 8px;
+}
+
+h1 {
+  font-size: 24px !important;
+  font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
+  font-weight: normal;
+  margin-top: 1em;
+  margin-bottom: 1rem;
+}
+
+/*#region Värvid */
+html {
+  --tavaline-tekst: #222325;
+  --taust: White;
+  --note-taust: #F6F9F8;
+  --adv-taust: LavenderBlush;
+  --kood: #222325;
+  --koodi-taust: #f6f8fa; /* nagu GitHubis */
+  --koodi-serv: Whitesmoke;
+  --arenduses: Tomato;
+}
+
+/*#endregion */
+
+/*#region Valimisriba */
+#valimisriba {
+  display: flex;
+  align-items: center;
+  border: 1px solid lightpink;
+  margin-bottom: 2rem; 
+}
+.valikukast {
+  flex-basis: 100%;
+  text-align: center;
+  padding: 1rem 2rem;
+  border: 1px solid lightpink;
+}
+.valitud {
+  background-color: gainsboro;
+}
+/*#endregion */
+
+/*#region Teateriba */
+#teateriba { /* Trikk inline-block elementide rea vert. joondamiseks */
+  height: 2rem;
+  margin-bottom: 2rem;
+}
+#teateriba:before {
+  content: "";
+  display: inline-block;
+  vertical-align: middle;
+  height: 100%;
+}
+.inline {
+  display: inline-block;
+  vertical-align: middle;
+}
+#teade {
+  min-height: 2rem;
+}
+.info, .viga {
+  padding: .5em;
+  border: .5em;
+  border-left-style: solid;
+  page-break-inside: avoid;
+  margin: 1em 1em 1.5em 0;
+}  
+.info {
+  border-color: darkgray /* #52E052 */;
+  background: lightgrey /* #E9FBE9 */;
+  overflow: auto;
+}
+.viga {
+  border-color: tomato;
+  border-style: none solid;
+  background: lavenderblush;
+}
+/*#endregion */
+
+/*#region Isikuvalikuala */
+.Isikuvalikuala {
+  display: flex;
+  align-items: center; /* vert-ne */
+}
+.paan { /* võrdse laiusega */
+  flex-basis: 100%;
+  /* text-align: center; */
+  padding: 0 3rem;
+}
+/* https://stackoverflow.com/questions/29503227/
+how-to-make-flexbox-items-the-same-size/29503264 */
+/*#endregion */
+
+/*#region Detailstatistika */
+/* Tabelid */
+#detstatohje {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+table { table-layout: fixed;
+  width: 100%; margin: 0 4em 2em 0; }
+table { border-collapse: collapse; }
+table, th, td { border: 1px solid lightgray; }
+td { padding: 0 1em;}
+/*#endregion */
+
+/*#region Kustuta */
+#kustutaohje {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+/*#endregion */
+
+/*#region Abi */
+#abiala {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+/*#endregion */
+
+/*#region ikoonid-nupud */
+.ikoon {
+  font-family: 'Material Icons';
+  font-size: 48px; color: #757575;
+}
+.nupp { margin: 0.5rem 0.5rem;
+  cursor: pointer;
+  color: #757575;
+}
+input {
+  border-radius: 4px;
+}
+/*#endregion */
+
+/*#region Paneelid */
+.note, .adv, .success {
+  padding: .5em;
+  border: .5em;
+  border-left-style: solid;
+  page-break-inside: avoid;
+  margin: 1em auto;
+}  
+
+.note {
+  border-color: Darkgray;
+  background: var(--note-taust);
+  overflow: auto;
+}
+
+.adv {
+  border-color: tomato;
+  border-style: none solid;
+  background: var(--adv-taust);
+}
+
+.success {
+  border-color: green;
+  border-style: none solid;
+  background: azure;
+}
+
+/*#endregion */
+
+/*#region mitmesugused */
+.hoiatav {
+  color: tomato !important;
+}
+
+.peidetud {
+  display: none !important;
+}
+
+a, a:hover, a:active, a:visited {
+  color: 292B2C !important;
+  text-decoration: underline;
+  text-decoration-style: dashed;
+  text-decoration-color: DarkBlue;
+}
+
+.ok { color: green; }
+.nok { color: Tomato; }
+
+code {
+  color: black;
+  background-color: #f6f8fa; /* nagu GitHubis */
+  border-radius: 4px;
+  padding: 4px;
+  font-family: monospace;
+}
+/*#endregion */
+

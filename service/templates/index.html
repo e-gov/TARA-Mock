@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TARA-Mock</title>
+
+    <!-- JQuery -->
+    <script src="https://code.jquery.com/jquery.min.js"></script>
+
+    <!-- Material Design icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <link rel="stylesheet" type="text/css" href="/static/styles.css" />
+
+  </head>
+
+  <body>
+    <div class="pealkiri">
+      <h1>
+        TARA-Mock <sup class="hoiatus">NOT FOR PRODUCTION USE</sup>
+      </h1>
+    </div>
+    <div>
+      Sisened süsteemi: redirect_uri = {{ .RedirectURI }}<br>
+      Parameetrid: 
+      scope = <code>{{ .Scope }}</code>, 
+      state = <code>{{ .State }}</code>, 
+      response_type = <code>{{ .ResponseType }}</code>, 
+      client_id = <code>{{ .ClientID }}</code>, 
+      ui_locales = <code>{{ .UILocales }}</code>, 
+      nonce = <code>{{ .Nonce }}</code>, 
+      acr_values = <code>{{ .AcrValues }}</code>
+    </div>
+    <div class="note">
+      Vali isik, kellena sisened
+    </div>
+    <div class="Isikuvalikuala">
+      <div class="paan">
+        <p>1 - Isikukood1 Eesnimi1 Perekonnanimi1</p>
+        <p>2 - Isikukood2 Eesnimi2 Perekonnanimi2</p>
+        <p>3 - Isikukood3 Eesnimi3 Perekonnanimi3</p>
+        <form action="/back" method="POST">
+          <!-- Turvaelemendid, peidetud väljadena -->
+          <input type="hidden" id="redirect_uri" name="redirect_uri" value="{{ .RedirectURI }}">
+          <input type="hidden" id="state" name="state" value="{{ .State }}">
+          <input type="hidden" id="nonce" name="nonce" value="{{ .Nonce }}">
+
+          <label>nr:</label>
+          <input name="nr" type="text" value="" size="2">
+          <input type="submit" value="kinnita" class="nupp" />
+        </form>
+
+      </div>
+      <div class="vahepaan">
+        või
+      </div>
+      <div class="paan">
+        <form action="/back" method="POST">
+          <p>
+            <label>isikukood:</label><br>
+            <input name="idcode" type="text" value="" size="11">
+          </p>
+          <p>
+            <label>eesnimi:</label><br>
+            <input name="firstname" type="text" value="">
+          </p>
+          <p>
+            <label>perekonnanimi:</label><br>
+            <input name="lastname" type="text" value=""><br>
+          </p>
+          <p>
+            <input type="submit" value="kinnita" class="nupp" />
+          </p>
+        </form>
+      </div>
+    </div>
+
+    <div>
+    </div>
+  </body>
+
+</html>

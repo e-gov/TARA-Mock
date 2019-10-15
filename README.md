@@ -9,6 +9,12 @@ TARA-Mock pakub samu otspunkte kui TARA, s.t TARA-Mock ja TARA on üksteisega va
 
 TARA-Mock juures on ka klientrakenduse näidis.
 
+![](docs/Rakendus_01.PNG)
+
+![](docs/TARA-Mock_01.PNG)
+
+![](docs/Rakendus_02.PNG)
+
 ## TARA-Mock
 
 TARA-Mock töötab pordil 8080.
