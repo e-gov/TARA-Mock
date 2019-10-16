@@ -8,7 +8,6 @@ echo "kui ka klientrakenduse näide paigaldatakse samasse masinasse"
 echo "(localhost)."
 echo "--------------------------"
 echo "### NB! Kasutusel Git for Windows tee-eraldajad"
-echo "Kasutamine"
 
 
 # Oluline allikas: https://www.freecodecamp.org/news/how-to-get-https-working-on-your-local-development-environment-in-5-minutes-7af615770eec/
