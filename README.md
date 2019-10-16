@@ -27,6 +27,14 @@ TARA-Mock juures on ka klientrakenduse näidis.
 TARA-Mock on tehtud rida lihtsustusi ja jäetud ära kontrolle:
 
 - aktsepteeritakse kõiki klientrakendusi (`client_id` väärtust ei kontrollita)
+- turvaelemendid (`state` ja `nonce`) antakse ühes sammus edasi HTML vormi peidetud väljadena
+- puudub päringuvõltsimise kaitse (CSRF)
+- juhusõned genereeritakse tavalise (`math/rand`), mitte krüptograafilise juhuarvugeneraatoriga (`crypto/rand`)
+- ainult Eesti isikukoodiga isikute autentimine
+- piiratud logimine: TARA-Mock väljastab mõningast logiteavet konsoolile
+- klientrakenduse salasõna ei kontrollita
+- identsustõendi väljastamisel `redirect_uri` ei kontrollita; identsustõend väljastatakse ainult volituskoodi alusel
+- identsustõendi väljastamisel ei kontrollita, kas tõend on aegunud
 
 ## TARA-Mock
 

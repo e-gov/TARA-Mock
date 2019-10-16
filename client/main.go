@@ -9,13 +9,25 @@ import (
 	"path/filepath"
 )
 
+var redirectURI string
+
+// PassParams koondab väärtusi, mida kasutatakse identsustõendi päringu
+// koostamiseks ja lehele "Autenditud" edastamiseks.
+type PassParams struct {
+	Code  string
+	State string
+	Nonce string
+}
+
 func main() {
+
+	redirectURI = "https://localhost:8081/return"
 
 	// Marsruudid
 	http.HandleFunc("/health", healthCheck)
 	http.HandleFunc("/", landingPage)
 	http.HandleFunc("/login", loginUser)
-	http.HandleFunc("/return", requestIdentityToken)
+	http.HandleFunc("/return", finalize)
 
 	fs := http.FileServer(http.Dir("static"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs)) // fileServer serveerib kasutajaliidese muutumatuid faile.
@@ -30,12 +42,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-}
-
-// healthCheck pakub elutukset (/health).
-func healthCheck(w http.ResponseWriter, r *http.Request) {
-	w.Header().Add("Content-Type", "application/json")
-	io.WriteString(w, `{"name":"TARA-Mock klientrakendus", "status":"ok"}`)
 }
 
 // LandingPage on klientrakenduse avaleht; kasutaja saab seal sisse logida (/).
@@ -65,16 +71,12 @@ func loginUser(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, ru, 301)
 }
 
-// RequestIdentityToken võtab TARA-Moc-st tagasi suunatud kasutaja vastu ja pärib TARA-Mock-lt identsustõendi (otspunkt /client/return).
-func requestIdentityToken(w http.ResponseWriter, r *http.Request) {
+// finalize : 1) võtab TARA-Moc-st tagasi suunatud kasutaja
+// vastu; 2) kutsub välja identsustõendi pärimise; 3) viib sisselogimise
+// lõpule - saadab sirvikusse lehe "autenditud". (Otspunkt /client/return).
+func finalize(w http.ResponseWriter, r *http.Request) {
 
-	// Päringuparameetrid, lehele "Autenditud" edastamiseks
-	type ReturnParams struct {
-		Code  string
-		State string
-		Nonce string
-	}
-	var ps ReturnParams
+	var ps PassParams
 
 	r.ParseForm() // Parsi päringuparameetrid.
 	// Võta päringust volituskood, state ja nonce
@@ -83,15 +85,30 @@ func requestIdentityToken(w http.ResponseWriter, r *http.Request) {
 	ps.Nonce = getP("nonce", r)
 
 	// TO DO: Päri identsustõend
+	var t string // Identsustõend
+	var ok bool
+	t, ok = getIdentityToken(ps)
+
+	if !ok {
+		log.Fatalln("Identsustõendi pärimine ebaõnnestus")
+	}
+
+	fmt.Println("Klient: main: Saadud identsustõend: ", t)
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	// Loe lehe "Autenditud" vmall, täida ja saada sirvikusse.
 	p := filepath.Join("templates", "autenditud.html")
-	t, err := template.ParseFiles(p)
+	tpl, err := template.ParseFiles(p)
 	if err != nil {
 		fmt.Fprintf(w, "Unable to load template")
 		return
 	}
-	t.Execute(w, ps)
+	tpl.Execute(w, ps)
 
+}
+
+// healthCheck pakub elutukset (/health).
+func healthCheck(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Content-Type", "application/json")
+	io.WriteString(w, `{"name":"TARA-Mock klientrakendus", "status":"ok"}`)
 }
