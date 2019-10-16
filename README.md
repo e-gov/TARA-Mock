@@ -10,7 +10,7 @@ TARA-Mock on reaalse TARA-ga ühilduv, s.t TARA-Mock ja TARA on üksteisega vahe
 
 TARA-Mock juures on ka klientrakenduse näidis.
 
-TARA-Mock ei ole mõeldud kasutamiseks toodangus.
+TARA-Mock ei ole mõeldud kasutamiseks toodangus. TARA-Mock ei ole mõeldud ka TARA-ga liidestamise testimiseks - sest TARA-Mock-is on ära jäetud mitmeid toodangus vajalikke kontrolle (vt allpool).
 
 ## Kasutusstsenaarium
 
