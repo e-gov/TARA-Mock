@@ -22,6 +22,12 @@ TARA-Mock juures on ka klientrakenduse näidis.
 
 <img src="docs/Rakendus_02.PNG" width="700">
 
+## Lihtsustused
+
+TARA-Mock on tehtud rida lihtsustusi ja jäetud ära kontrolle:
+
+- aktsepteeritakse kõiki klientrakendusi (`client_id` väärtust ei kontrollita)
+
 ## TARA-Mock
 
 TARA-Mock töötab pordil 8080.
