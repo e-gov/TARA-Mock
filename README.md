@@ -36,6 +36,10 @@ TARA-Mock on tehtud rida lihtsustusi ja jäetud ära kontrolle:
 - identsustõendi väljastamisel `redirect_uri` ei kontrollita; identsustõend väljastatakse ainult volituskoodi alusel
 - identsustõendi väljastamisel ei kontrollita, kas tõend on aegunud
 
+## Kaitsed
+
+TARA-Mock töötab HTTPS-ga, rakendatakse TLS kliendi autentimist.
+
 ## TARA-Mock
 
 TARA-Mock töötab pordil 8080.

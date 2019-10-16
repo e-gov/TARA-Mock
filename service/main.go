@@ -197,8 +197,18 @@ func SendIdentityToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// b.Code
+	// idToendid[b.Code]
+	// idtAndmed
+	v, ok := idToendid[b.Code]
+	if !ok {
+		http.Error(w, "Identsustõend ei eksisteeri", 404)
+		return
+	}
+
 	// Koosta identsustõend
-	mt := IdentityToken{"ISIKUKOOD", "EESNIMI", "PEREKONNANIMI"}
+	var mt IdentityToken
+	mt.Sub, mt.FirstName, mt.LastName = v.sub, v.givenName, v.familyName
 	output, err := json.Marshal(mt)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
