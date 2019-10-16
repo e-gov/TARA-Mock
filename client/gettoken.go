@@ -15,15 +15,15 @@ func getIdentityToken(vk string) ([]byte, bool) {
 
 	// Lae kliendi võti ja sert
 	cert, err := tls.LoadX509KeyPair(
-		"keys/https-server.crt",
-		"keys/https-server.key")
+		"vault/https-server.crt",
+		"vault/https-server.key")
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	// Lae CA sert
 	caCert, err := ioutil.ReadFile(
-		"keys/rootCA.pem",
+		"vault/rootCA.pem",
 	)
 	if err != nil {
 		log.Fatal(err)
