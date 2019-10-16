@@ -36,36 +36,25 @@ TARA-Mock on tehtud rida lihtsustusi ja jäetud ära kontrolle:
 - identsustõendi väljastamisel `redirect_uri` ei kontrollita; identsustõend väljastatakse ainult volituskoodi alusel
 - identsustõendi väljastamisel ei kontrollita, kas tõend on aegunud
 
-## Kaitsed
+## Serdid
 
 TARA-Mock töötab HTTPS-ga, rakendatakse TLS kliendi autentimist.
 
+Genereeri ja paigalda TARA-Mock HTTPS serveri serdid. Sertide genereerimise näiteskript on failis `keys/genkeys.sh`.
+
+Kui kasutad kliendi näiterakendust, siis peavad ka sellel olema serdid. 
+
 ## TARA-Mock
 
-TARA-Mock töötab pordil 8080.
+TARA-Mock töötab pordil 8080. Paigalda TARA-Mock sobivasse masinasse. TARA-Mock on kasutatav ka oma masinas (`localhost`). Otspunktid:
 
-**Seadistamine**:
-
-Genereeri ja sea TARA-Mock HTTPS serveri serdid. Sertide genereerimise näiteskript on failis `keys/genkeys.sh`.
-
-Etteantud identiteedid on koodi sissekirjutatud TARA-Mock koodi. Muuda identiteedid oma vajadustele vastavaks.
-
-**Paigaldamine**:
-
-Paigalda TARA-Mock sobivasse masinasse. TARA-Mock on kasutatav ka oma masinas (`localhost`).
-
-**Otspunktid**:
 - `/health` - elutukse
 - `/` - avaleht teabega TARA-Makett kohta
 - `/oidc/authorize` - autentimisele suunamine
 - `/token` - identsustõendi väljastamine
 - `/oidc/jwks` - identsustõendi avalik võti
 
-Nt TARA-Mock kasutamisel oma masinas:
-
-`https://localhost:8080/oidc/token` - identsustõendi väljastamine
-
-**Käivitamine**:
+Nt TARA-Mock kasutamisel oma masinas: `https://localhost:8080/health`. Käivitamine:
 
 ```
 cd service
@@ -74,19 +63,20 @@ go run .
 
 ## Klientrakenduse näidis
 
-**Otspunktid**:
+Klientrakenduse näidis töötab lokaalses masinas, pordil 8081. Otspunktid:
+
 - `/health` - elutukse
 - `/` - avaleht; kasutaja saab sealt minna TARA-Mock-i autentima
 - `/login` - kasutaja suunamine TARA-Mock-i autentima
 - `/return` - autentimiselt tagasi suunatud kasutaja vastuvõtmine, identsustõendi pärimine TARA-Mock-st ja sisselogimise lõpuleviimine 
 
-**Seadistamine**:
-
-Klientrakenduse näidis töötab lokaalses masinas, pordil 8081. Genereeri ja sea TARA-Mock HTTPS serveri serdid. Sertide genereerimise näiteskript on failis `keys/genkeys.sh`.
-
-**Käivitamine**:
+Käivitamine:
 
 ```
 cd service
 go run .
 ```
+## Teostamata
+
+- identsustõendi allkirjastamine
+- väiksemaid täiendusi, vastavusse viimiseks TARA-s kasutatavale OpenID Connect protollile.

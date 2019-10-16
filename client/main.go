@@ -11,12 +11,12 @@ import (
 
 var redirectURI string
 
-// PassParams koondab väärtusi, mida kasutatakse identsustõendi päringu
-// koostamiseks ja lehele "Autenditud" edastamiseks.
+// PassParams koondab lehele "Autenditud" edastatavaid väärtusi.
 type PassParams struct {
-	Code  string
-	State string
-	Nonce string
+	Code        string
+	State       string
+	Nonce       string
+	Isikuandmed string
 }
 
 func main() {
@@ -84,16 +84,16 @@ func finalize(w http.ResponseWriter, r *http.Request) {
 	ps.State = getP("state", r)
 	ps.Nonce = getP("nonce", r)
 
-	// TO DO: Päri identsustõend
-	var t string // Identsustõend
-	var ok bool
-	t, ok = getIdentityToken(ps)
-
+	// Päri identsustõend
+	// t []byte - Identsustõend
+	t, ok := getIdentityToken(getP("code", r))
 	if !ok {
 		log.Fatalln("Identsustõendi pärimine ebaõnnestus")
 	}
 
-	fmt.Println("Klient: main: Saadud identsustõend: ", t)
+	fmt.Println("Klient: main: Saadud identsustõend: ", string(t))
+
+	ps.Isikuandmed = string(t)
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	// Loe lehe "Autenditud" vmall, täida ja saada sirvikusse.

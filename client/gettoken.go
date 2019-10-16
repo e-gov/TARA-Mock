@@ -11,7 +11,7 @@ import (
 )
 
 // getIdentityToken pärib TARA-Mock-lt identsustõendi.
-func getIdentityToken(ps PassParams) (string, bool) {
+func getIdentityToken(vk string) ([]byte, bool) {
 
 	// Lae kliendi võti ja sert
 	cert, err := tls.LoadX509KeyPair(
@@ -45,7 +45,7 @@ func getIdentityToken(ps PassParams) (string, bool) {
 	// Koosta POST päringu keha
 	requestBody, err := json.Marshal(map[string]string{
 		"grant_type":   "authorization_code",
-		"code":         ps.Code,
+		"code":         vk,
 		"redirect_uri": redirectURI,
 	})
 	if err != nil {
@@ -63,13 +63,11 @@ func getIdentityToken(ps PassParams) (string, bool) {
 	}
 	defer resp.Body.Close()
 
+	// Loeb päringu keha, kujule []byte
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	// Väljasta saadud vastus konsoolile
-	// log.Println("getToken: Saadud: ", string(body))
-
-	return string(body), true
+	return body, true
 }

@@ -41,9 +41,9 @@ type IdentityToken struct {
 // IDTokenReqBody on vastuvõetava identsustõendi päringu keha
 // struktuur.
 type IDTokenReqBody struct {
-	GrantType  string `json:"grant_type"`
-	Code       string `json:"code"`
-	RequestURI string `json:"request_uri"`
+	GrantType  string      `json:"grant_type"`
+	Code       volituskood `json:"code"`
+	RequestURI string      `json:"request_uri"`
 }
 
 func main() {
@@ -200,7 +200,7 @@ func SendIdentityToken(w http.ResponseWriter, r *http.Request) {
 	// b.Code
 	// idToendid[b.Code]
 	// idtAndmed
-	v, ok := idToendid[b.Code]
+	v, ok := idToendid[msg.Code]
 	if !ok {
 		http.Error(w, "Identsustõend ei eksisteeri", 404)
 		return
