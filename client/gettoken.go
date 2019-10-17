@@ -90,13 +90,13 @@ func getIdentityToken(vk string) (string, bool) {
 
 	// ----------------
 	// Päri allkirja avalik võti
+	fmt.Println("getIdentityToken: Pärin identsustõendi allkirjavõtme")
 	resp1, err := client.Get(conf.TaraMockKeyEndpoint)
 	// resp1, err := client.Get("https://tara-test.ria.ee/oidc/jwks")
 	if err != nil {
 		log.Fatalln("Viga allkirja avaliku võtme pärimisel: ", err)
 	}
 	defer resp1.Body.Close()
-	fmt.Println("----")
 
 	type Key struct {
 		Kty string `json:"kty"`
@@ -115,12 +115,12 @@ func getIdentityToken(vk string) (string, bool) {
 	var data KeySet
 	err = decoder.Decode(&data)
 	if err != nil {
-		log.Fatalln("Viga võtmepäringu vastuse dekodeerimisel: ", err)
+		log.Fatalln("getIdentityToken: Viga võtmepäringu vastuse dekodeerimisel: ", err)
 	}
 	// fmt.Println("Saadud võti kid: ", data.Keys[0].Kid)
 	jsonBytes, err := json.Marshal(data)
 	if err != nil {
-		log.Fatalln("Viga JSON-kujule teisendamisel: ", err)
+		log.Fatalln("getIdentityToken: Viga JSON-kujule teisendamisel: ", err)
 	}
 	// fmt.Println("Saadud võtmed: ", string(jsonBytes))
 
@@ -128,13 +128,13 @@ func getIdentityToken(vk string) (string, bool) {
 	// pakutud Go-kujule. kSet tüüp on jwk.Set.
 	kSet, err := jwk.ParseString(string(jsonBytes))
 	if err != nil {
-		log.Fatalln("Viga teisendamisel lestrrat-go/jwx/jwk kujule: ", err)
+		log.Fatalln("getIdentityToken: Viga teisendamisel lestrrat-go/jwx/jwk kujule: ", err)
 	}
-	fmt.Println("Saadud võti kid = ", kSet.Keys[0].KeyID())
+	fmt.Println("getIdentityToken: Saadud võti, kid = ", kSet.Keys[0].KeyID())
 	// Materialize() peaks jwk.Key-st tegema *rsa.PublicKey.
 	m, err := kSet.Keys[0].Materialize()
 	if err != nil {
-		log.Printf("Avaliku RSA võtme moodustamine ebaõnnestus: %s", err)
+		log.Printf("getIdentityToken: Avaliku RSA võtme moodustamine ebaõnnestus: %s", err)
 		return "Viga: Avaliku RSA võtme moodustamine ebaõnnestus", true
 	}
 	idTokenPublicKey = m.(*rsa.PublicKey)
@@ -142,14 +142,16 @@ func getIdentityToken(vk string) (string, bool) {
 	// ----------------
 	// Päri identsustõend
 	// Koosta POST päringu query-osa ja keha
-	qp := "?grant_type=authorization_code" +
+	qp := "grant_type=authorization_code" +
 		"&code=" + vk +
-		"&redirect_uri" + conf.RedirectURI
+		"&redirect_uri=" + conf.RedirectURI
+	fmt.Printf("getIdentityToken: Pärin identsustõendi: %v\n", qp)	
 	var requestBody []byte
+	requestBody = []byte(qp)
 
 	// Saada POST päring
 	resp, err := client.Post(
-		conf.TaraMockTokenEndpoint+qp,
+		conf.TaraMockTokenEndpoint,
 		"application/json",
 		bytes.NewBuffer(requestBody),
 	)
@@ -163,7 +165,7 @@ func getIdentityToken(vk string) (string, bool) {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	// fmt.Println("Saadud vastus: ", string(body))
+	fmt.Println("Saadud vastus: ", string(body))
 
 	type IDTokenResponse struct {
 		AccessToken string `json:"access_token"`

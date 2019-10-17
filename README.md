@@ -97,7 +97,7 @@ Otspunktide poole pöördumine on samasugune TARA (või test-TARA) poole pöörd
 3 Otsusta, kus hakkad hoidma TARA-Mock-i seadistust ("konfi"), võtmeid ja etteantud identiteete. Vaikimisi on seadistus koodirepos failis `config.json`, võtmed repo kaustas `service/vault` ja etteantud identiteedid repo juurkaustas failis `identities.json`. Koodiuuenduste tõmbamisega kirjutatakse need tehised üle. Seetõttu on parem seadistust hoida koodirepost eraldi. Kanna `config.json` ja `identities.json` eraldi seadistuskausta, nt `TARA-Mock-conf`; moodusta sinna ka võtmed. Seadistuskausta asukoht näita TARA-Mock-i käivitamisel võtmega `-conf`, nt:
 
 ```
-go run . -conf ../../TARA-Mock-conf
+go run . -conf ../../TARA-Mock-conf/config.json
 ```
 
 4 Kui soovid, muuda etteantud identiteete.
@@ -131,7 +131,8 @@ Muuda failis `service/config.json` olev vaikeseadistus oma konfiguratsioonile va
 	"taraMockKey": "vault/https.key",
 	"idTokenPrivKeyPath": "vault/idtoken.key",
 	"idTokenPubKeyPath": "vault/idtoken.pub",
-	"kid": "taramock"
+	"kid": "taramock",
+	"identitiesFile": "identities.json"
 }
 ```
 

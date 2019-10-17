@@ -48,7 +48,7 @@ func main() {
 	conf = loadConf(*cFilePtr)
 
 	// Loe identiteedid sisse
-	identities = loadIdentities("identities.json")
+	identities = loadIdentities(conf.IdentitiesFile)
 
 	// Marsruudid
 	// Go-s "/" käsitleb ka need teed, millele oma käsitlejat ei leidu.

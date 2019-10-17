@@ -25,6 +25,7 @@ func sendUserBack(w http.ResponseWriter, r *http.Request) {
 	// Genereeri volituskood
 	var c volituskood
 	c = volituskood(randSeq(6))
+	fmt.Printf("sendUserBack: Genereeritud volituskood: %v\n", c)
 
 	// Kogu identsustõendi koostamiseks ja väljastamiseks vajalikud
 	// andmed.
@@ -33,6 +34,7 @@ func sendUserBack(w http.ResponseWriter, r *http.Request) {
 	// Selgita, millise identiteedi kasutaja valis. Kui valis etteantute
 	// hulgast, siis Form submit saatis elemendi isik=<nr> (0-based).
 	isikunr := getPtr("isik", r)
+  fmt.Printf("sendUserBack: Kasutaja valis isiku: %v\n", isikunr)
 
 	if isikunr != "" {
 		// Teisenda int-ks
