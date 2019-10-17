@@ -22,10 +22,10 @@ func TestPersonCodeToDoB(t *testing.T) {
 	}
 
 	// Õige, eesliiteta
-	dob2, err := personCodeToDoB("36107120334") // Priit Parmakson
-	if err != nil || dob2 != "1961-07-12" {
+	dob2a, err := personCodeToDoB("36107120334") // Priit Parmakson
+	if err != nil || dob2a != "1961-07-12" {
 		t.Errorf("<36107120334>: ootasin: %v, %v, sain: %v, %v", "1961-07-12", nil,
-			dob2, err)
+			dob2a, err)
 	}
 
 	// Kuu või päeva nr väljaspool lubatud vahemikku
