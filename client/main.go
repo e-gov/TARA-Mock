@@ -36,8 +36,8 @@ func main() {
 	log.Println("** Klientrakenduse näidis käivitatud pordil 8081 **")
 	err := http.ListenAndServeTLS(
 		":8081",
-		"vault/https-server.crt",
-		"vault/https-server.key",
+		"vault/https.crt",
+		"vault/https.key",
 		nil)
 	if err != nil {
 		log.Fatal(err)

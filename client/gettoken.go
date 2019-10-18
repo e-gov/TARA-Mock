@@ -15,8 +15,8 @@ func getIdentityToken(vk string) ([]byte, bool) {
 
 	// Lae kliendi võti ja sert
 	cert, err := tls.LoadX509KeyPair(
-		"vault/https-server.crt",
-		"vault/https-server.key")
+		"vault/https.crt",
+		"vault/https.key")
 	if err != nil {
 		log.Fatal(err)
 	}

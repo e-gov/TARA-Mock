@@ -64,8 +64,8 @@ func main() {
 	log.Println("** TARA-Mock käivitatud pordil 8080 **")
 	err := http.ListenAndServeTLS(
 		":8080",
-		"vault/https-server.crt",
-		"vault/https-server.key",
+		"vault/https.crt",
+		"vault/https.key",
 		nil)
 	if err != nil {
 		log.Fatal(err)
