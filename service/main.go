@@ -1,11 +1,9 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"html/template"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"path/filepath"
@@ -17,12 +15,14 @@ const returnURL = "https://localhost:8081/return"
 
 type volituskood string
 
-// Andmed identsustõendi moodustamiseks ja väljastamiseks. Identsustõend koostatakse
-// vahetult enne väljastamist.
+// Andmed identsustõendi moodustamiseks ja väljastamiseks.
+// Identsustõend koostatakse vahetult enne väljastamist.
 type idtAndmed struct {
 	sub        string // subject, isikutõendi väli "sub"
 	familyName string // family_name
 	givenName  string // given_name
+	state      string // autentimispäringus saadetud turvaväärtus
+	nonce      string // autentimispäringus saadetud turvaväärtus
 }
 
 // Identsustõendite hoidla
@@ -124,8 +124,9 @@ func AuthenticateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 // SendUserBack : 1) võtab sirvikust vastu kasutaja tehtud valiku;
-// 2) genereerib OIDC volituskoodi; 3) genereerib identsustõendi ja
-// paneb selle ootele ning 4) saadab kasutaja klientrakendusse tagasi
+// 2) genereerib OIDC volituskoodi; 3) kogub identsustõendi
+// koostamiseks vajalikud andmed ja talletab need mälus peetavas
+// tõendihoidlas; 4) saadab kasutaja klientrakendusse tagasi
 // (/return).
 func SendUserBack(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm() // Parsi päringuparameetrid.
@@ -144,19 +145,33 @@ func SendUserBack(w http.ResponseWriter, r *http.Request) {
 	var idta idtAndmed
 	switch n := getP("nr", r); n {
 	case "1":
-		i := idtAndmed{"Isikukood1", "Eesnimi1", "Perekonnanimi1"}
+		i := idtAndmed{
+			sub:        "Isikukood1",
+			givenName:  "Eesnimi1",
+			familyName: "Perekonnanimi1",
+		}
 		idta = i
 	case "2":
-		i := idtAndmed{"Isikukood2", "Eesnimi2", "Perekonnanimi2"}
+		i := idtAndmed{
+			sub:        "Isikukood2",
+			givenName:  "Eesnimi2",
+			familyName: "Perekonnanimi2",
+		}
 		idta = i
 	case "3":
-		i := idtAndmed{"Isikukood3", "Eesnimi3", "Perekonnanimi3"}
+		i := idtAndmed{
+			sub:        "Isikukood3",
+			givenName:  "Eesnimi3",
+			familyName: "Perekonnanimi3",
+		}
 		idta = i
 	default:
 		idta.sub = getP("idcode", r)
 		idta.givenName = getP("firstname", r)
 		idta.familyName = getP("lastname", r)
 	}
+	idta.state = state
+	idta.state = nonce
 
 	// ..ja pane hoidlasse
 	mutex.Lock()
@@ -173,51 +188,6 @@ func SendUserBack(w http.ResponseWriter, r *http.Request) {
 
 	// Suuna kasutaja tagasi
 	http.Redirect(w, r, ru, 301)
-}
-
-// SendIdentityToken väljastab klientrakendusele identsustõendi (OIDC identsustõendi otspunkt /oidc/token).
-func SendIdentityToken(w http.ResponseWriter, r *http.Request) {
-	// Võta päringust volituskood, seejärel võta volituskoodile
-	// vastavad identsustõendi andmed, koosta identsustõend ja saada
-	// päringu vastuses
-
-	// Loe päringu keha
-	b, err := ioutil.ReadAll(r.Body)
-	defer r.Body.Close()
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	// Paki lahti
-	var msg IDTokenReqBody
-	err = json.Unmarshal(b, &msg)
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	// b.Code
-	// idToendid[b.Code]
-	// idtAndmed
-	v, ok := idToendid[msg.Code]
-	if !ok {
-		http.Error(w, "Identsustõend ei eksisteeri", 404)
-		return
-	}
-
-	// Koosta identsustõend
-	var mt IdentityToken
-	mt.Sub, mt.FirstName, mt.LastName = v.sub, v.givenName, v.familyName
-	output, err := json.Marshal(mt)
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	// Väljasta
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.Write(output)
 }
 
 // SendKey väljastab klientrakendusele identsustõendi allkirjastamisel kasutatavale privaatvõtmele vastava avaliku võtme (eostab OIDC avaliku võtme otspunkti oidc/jwks).

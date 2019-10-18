@@ -82,5 +82,5 @@ go run .
 ```
 ## Teostamata
 
-- identsustõendi allkirjastamine
+- identsustõendi dekodeerimine
 - väiksemaid täiendusi, vastavusse viimiseks TARA-s kasutatavale OpenID Connect protollile.
