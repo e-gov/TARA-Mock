@@ -1,4 +1,4 @@
-# Turvamisjuhend
+# Serdid
 
 ## Võtmeplaan
 
@@ -10,15 +10,17 @@ TARA-Mock vajab oma tööks järgmisi võtmeid ja serte (kaustas `service/vault`
 - `idtoken.pub` - identsustõendi allkirjastamise avalik võti
 - `rootCA.pem` - klientrakenduse serdi väljaandja sert
 
-Sirvikus tuleb luua usaldus TARA-Mock-i vastu. Selleks tuleb sirvikusse,  millega TARA-Mock-i kasutatakse, paigaldada TARA-Mock HTTPS serveri serdi väljaandja (edaspidi - TARA-Mock-i CA) sert (s.t usaldusankru paigaldamine.):
+Sirvikus tuleb luua usaldus TARA-Mock-i vastu. Selleks tuleb sirvikusse,  millega TARA-Mock-i kasutatakse, paigaldada TARA-Mock HTTPS serveri serdi väljaandja (edaspidi - TARA-Mock-i CA) sert:
 
-- - `rootCA.pem` - TARA-Mock-i CA sert
+- `rootCA.pem` - TARA-Mock-i CA sert
 
-Klientrakenduses, mis TARA-Mock-i poole pöördub, tuleb paigaldada TARA-Mock-i CA sert. Samuti peab klientrakendusel endal olema privaatvõti ja sert. Need failid tuleb panna kausta `client/vault`:
+Usaldusankru sirvikusse paigaldamise juhiseid vt jaotises [Sirvik](#sirvik)
 
-- - `rootCA.pem` - TARA-Mock-i CA sert
-- `https.key` - klientrakenduse HTTPS kliendi privaatvõti
-- `https.crt` - klientrakenduse HTTPS kliendi sert
+Klientrakenduses, mis TARA-Mock-i poole pöördub, tuleb paigaldada TARA-Mock-i CA sert. Samuti peab klientrakendusel endal olema privaatvõti ja sert. Oma privaatvõtit ja serti kasutab klientrakendus nii oma HTTPS serveris (kasutajaliidese pakkumisel läbi sirviku) kui ka HTTPS kliendina, pöördumisel TARA-Mock-i poole (identsustõendi pärimisel). Need failid tuleb panna kausta `client/vault`:
+
+- `rootCA.pem` - TARA-Mock-i CA sert
+- `https.key` - klientrakenduse privaatvõti
+- `https.crt` - klientrakenduse sert
 
 ## Võtmete ja sertide valmistamine
 
@@ -87,4 +89,16 @@ openssl rsa \
 ```
 4 Võtmete ja sertide paigaldamine TARA-Mock-i ja klientrakendusse (vastavalt kaustadesse `service/vault` ja `client/vault`).
 
+## Sirvik
 
+Sirvikusse, millega TARA-Mock-i kasutatakse, tuleb paigaldada TARA-Mock-i CA sert. Sellega pannakse sirvik TARA-Mock-i usaldama. Usalduseta ei ava sirvik TARA-Mock-i kasutajaliidest.
+
+- kopeeri TARA-Mock-i CA sert sirviku arvutisse (või tee muul viisil kättesaadavaks)
+- Firefox: `Tools`, `Options`, `Privacy & Security`, `Certificates`, `View Certificates`, `Authorities`, `Import`
+
+Kui kasutate ka TARA-Mock-ga kaasas olevat klientrakendust, siis peab ka selle CA serdi paigaldama sirvikusse. Kui TARA-Mock-i ja klientrakenduse serdid anda välja ühe CA poolt, piisab ühest paigaldamisest. 
+
+Turvameetmed:
+
+- kaitske CA privaatvõtit
+- TARA-Mock-i kasutamise järel (kui rakendus sai testitud), eemaldage CA sert sirvikust.

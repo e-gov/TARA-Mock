@@ -19,9 +19,9 @@
 
   <body>
     <h1>Rakendus</h1>
-    <div class="note">Rakendus demonstreerib TARA-Mock-i kasutamist.</div>
+    <div class="note">Rakendus {{ .AppHost }}{{ .AppHTTPServerPort }} demonstreerib <a href="https://github.com/e-gov/TARA-Mock">TARA-Mock-i</a> kasutamist.</div>
     <p class="nupp">
-      <a href="https://localhost:8080/oidc/authorize?redirect_uri=https%3A%2F%2Flocalhost%2Freturn&scope=openid&state=111&response_type=code&client_id=111">Sisene</a>
+      <a href="login">Sisene</a>
     </p>
   </body>
 

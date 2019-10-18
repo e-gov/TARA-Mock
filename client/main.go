@@ -6,10 +6,28 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"net/url"
 	"path/filepath"
 )
 
-var redirectURI string
+const (
+	// AppHost on käesoleva klientrakenduse hostinimi.
+	AppHost = "localhost"
+	// AppHTTPServerPort on käesoleva klientrakenduse HTTPS serveri port.
+	AppHTTPServerPort = ":8081"
+	// AppCert on käesoleva klientrakenduse HTTPS sert.
+	AppCert = "vault/https.crt"
+	// AppKey on käesoleva klientrakenduse HTTPS privaatvõti.
+	AppKey = "vault/https.key"
+
+	// Usaldusankur TARA-Mock-i poole pöördumisel
+	rootCAFile = "vault/rootCA.pem"
+
+	// TARA-Mock
+	taraMockAuthorizeEndpoint = "https://localhost:8080/oidc/authorize"
+	taraMockTokenEndpoint     = "https://localhost:8080/oidc/token"
+	redirectURI               = "https://localhost:8081/return"
+)
 
 // PassParams koondab lehele "Autenditud" edastatavaid väärtusi.
 type PassParams struct {
@@ -20,8 +38,6 @@ type PassParams struct {
 }
 
 func main() {
-
-	redirectURI = "https://localhost:8081/return"
 
 	// Marsruudid
 	http.HandleFunc("/health", healthCheck)
@@ -35,9 +51,9 @@ func main() {
 	// Käivita HTTPS server
 	log.Println("** Klientrakenduse näidis käivitatud pordil 8081 **")
 	err := http.ListenAndServeTLS(
-		":8081",
-		"vault/https.crt",
-		"vault/https.key",
+		AppHTTPServerPort,
+		AppCert,
+		AppKey,
 		nil)
 	if err != nil {
 		log.Fatal(err)
@@ -47,6 +63,15 @@ func main() {
 // LandingPage on klientrakenduse avaleht; kasutaja saab seal sisse logida (/).
 func landingPage(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+
+	// Valmista ette malli parameetrid
+	type MalliParameetrid struct {
+		AppHost           string
+		AppHTTPServerPort string
+	}
+	mp := MalliParameetrid{AppHost, AppHTTPServerPort}
+	fmt.Println(mp)
+
 	// Loe avalehe mall, täida ja saada sirvikusse.
 	p := filepath.Join("templates", "index.html")
 	t, err := template.ParseFiles(p)
@@ -54,14 +79,15 @@ func landingPage(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Unable to load template")
 		return
 	}
-	t.Execute(w, nil)
+	t.Execute(w, mp)
 }
 
 // LoginUser suunab kasutaja TARA-Mock-i autentima.
 func loginUser(w http.ResponseWriter, r *http.Request) {
 	// Ümbersuunamis-URL
-	ru := "https://localhost:8080/oidc/authorize?=" +
-		"redirect_uri=https%3A%2F%2Flocalhost%3A8081%2Freturn&" +
+	ru := taraMockAuthorizeEndpoint + "?" +
+		"redirect_uri=" +
+		url.PathEscape(redirectURI) + "&" +
 		"scope=openid&" +
 		"state=1111&" +
 		"response_type=code&" +

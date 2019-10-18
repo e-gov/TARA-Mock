@@ -10,8 +10,13 @@ import (
 	"sync"
 )
 
-const taraMockHost = "localhost"
-const returnURL = "https://localhost:8081/return"
+const (
+	taraMockHost   = "localhost"
+	returnURL      = "https://localhost:8081/return"
+	httpServerPort = ":8080"
+	taraMockCert   = "vault/https.crt"
+	taraMockKey    = "vault/https.key"
+)
 
 type volituskood string
 
@@ -63,9 +68,9 @@ func main() {
 	// Käivita HTTPS server
 	log.Println("** TARA-Mock käivitatud pordil 8080 **")
 	err := http.ListenAndServeTLS(
-		":8080",
-		"vault/https.crt",
-		"vault/https.key",
+		httpServerPort,
+		taraMockCert,
+		taraMockKey,
 		nil)
 	if err != nil {
 		log.Fatal(err)

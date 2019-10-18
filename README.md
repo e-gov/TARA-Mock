@@ -12,6 +12,8 @@ TARA-Mock juures on ka klientrakenduse näidis.
 
 TARA-Mock ei ole mõeldud kasutamiseks toodangus. TARA-Mock ei ole mõeldud ka TARA-ga liidestamise testimiseks - sest TARA-Mock-is on ära jäetud mitmeid toodangus vajalikke kontrolle (vt allpool).
 
+TARA-Mock on kirjutatud Go-s.
+
 ## Kasutusstsenaarium
 
 1) Suunamine autentimisele
@@ -40,14 +42,6 @@ TARA-Mock on tehtud rida lihtsustusi ja jäetud ära kontrolle:
 - identsustõendi väljastamisel `redirect_uri` ei kontrollita; identsustõend väljastatakse ainult volituskoodi alusel
 - identsustõendi väljastamisel ei kontrollita, kas tõend on aegunud
 
-## Serdid
-
-TARA-Mock töötab HTTPS-ga, rakendatakse TLS kliendi autentimist.
-
-Genereeri ja paigalda TARA-Mock HTTPS serveri serdid. Sertide genereerimise näiteskript on failis `keys/genkeys.sh`.
-
-Kui kasutad kliendi näiterakendust, siis peavad ka sellel olema serdid. 
-
 ## TARA-Mock
 
 TARA-Mock töötab pordil 8080. Paigalda TARA-Mock sobivasse masinasse. TARA-Mock on kasutatav ka oma masinas (`localhost`). Otspunktid:
@@ -58,12 +52,7 @@ TARA-Mock töötab pordil 8080. Paigalda TARA-Mock sobivasse masinasse. TARA-Moc
 - `/token` - identsustõendi väljastamine
 - `/oidc/jwks` - identsustõendi avalik võti
 
-Nt TARA-Mock kasutamisel oma masinas: `https://localhost:8080/health`. Käivitamine:
-
-```
-cd service
-go run .
-```
+Nt TARA-Mock kasutamisel oma masinas: `https://localhost:8080/health`.
 
 ## Klientrakenduse näidis
 
@@ -74,12 +63,35 @@ Klientrakenduse näidis töötab lokaalses masinas, pordil 8081. Otspunktid:
 - `/login` - kasutaja suunamine TARA-Mock-i autentima
 - `/return` - autentimiselt tagasi suunatud kasutaja vastuvõtmine, identsustõendi pärimine TARA-Mock-st ja sisselogimise lõpuleviimine 
 
-Käivitamine:
+## Paigaldamine
+
+- Masinas peab olema paigaldatud Go, versioon 1.11 või hilisem.
+- Klooni repo [https://github.com/e-gov/TARA-Mock](https://github.com/e-gov/TARA-Mock) masinasse.
+- Valmista ja paigalda võtmed ja serdid, vt [Serdid](docs/Serdid.md)
+  - sh lisa sirvikusse TARA-Mock-i CA sert
+- Vajadusel muuda TARA-Mock-i porti (vaikimisi `8080`)
+- Käivita TARA-Mock:
 
 ```
 cd service
 go run .
 ```
+
+TARA-Mock-ga kaasasoleva klientrakenduse kasutamisel:
+
+- Masinas peab olema paigaldatud Go, versioon 1.11 või hilisem.
+- Klooni repo [https://github.com/e-gov/TARA-Mock](https://github.com/e-gov/TARA-Mock) masinasse.
+- Valmista ja paigalda võtmed ja serdid, vt [Serdid](docs/Serdid.md)
+- Vajadusel sea klientrakenduses õige TARA-Mock-i hostinimi (vaikimisi `localhost`), TARA-Mock-i ja klientrakenduse pordinumbrid (vaikimisi `8080` ja `8081`)
+- Käivita TARA-Mock:
+
+```
+cd client
+go run .
+```
+
+- Ava sirvikus klientrakenduse avaleht (vaikimisi `https://localhost:8081`)
+
 ## Teostamata
 
 - identsustõendi dekodeerimine

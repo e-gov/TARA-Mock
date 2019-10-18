@@ -15,15 +15,15 @@ func getIdentityToken(vk string) ([]byte, bool) {
 
 	// Lae kliendi võti ja sert
 	cert, err := tls.LoadX509KeyPair(
-		"vault/https.crt",
-		"vault/https.key")
+		AppCert,
+		AppKey)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	// Lae CA sert
 	caCert, err := ioutil.ReadFile(
-		"vault/rootCA.pem",
+		rootCAFile,
 	)
 	if err != nil {
 		log.Fatal(err)
@@ -54,7 +54,7 @@ func getIdentityToken(vk string) ([]byte, bool) {
 
 	// Saada POST päring
 	resp, err := client.Post(
-		"https://localhost:8080/oidc/token",
+		taraMockTokenEndpoint,
 		"application/json",
 		bytes.NewBuffer(requestBody),
 	)
