@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -74,7 +75,6 @@ func sendIdentityToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Koosta JWT
 	// Koosta JWT väited
 	claims := &Claims{
 		Jti:      "001",
@@ -135,6 +135,7 @@ func sendIdentityToken(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json;charset=utf-8")
 	//	w.Write([]byte(tokenString))
 	w.Write(saadetis)
+	fmt.Println("sendToken: Identsustõend väljastatud")
 }
 
 // jwt teegi näide: https://github.com/dgrijalva/jwt-go/issues/141

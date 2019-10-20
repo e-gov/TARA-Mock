@@ -21,7 +21,6 @@ import (
 
 const (
 	taraMockHost       = "localhost"
-	returnURL          = "https://localhost:8081/return"
 	httpServerPort     = ":8080"
 	taraMockCert       = "vault/https.crt"
 	taraMockKey        = "vault/https.key"

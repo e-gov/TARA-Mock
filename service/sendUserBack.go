@@ -19,6 +19,7 @@ func sendUserBack(w http.ResponseWriter, r *http.Request) {
 
 	r.ParseForm() // Parsi päringuparameetrid.
 
+	returnURI := getPtr("redirect_uri", r)
 	state := getPtr("state", r)
 	nonce := getPtr("nonce", r)
 
@@ -63,7 +64,7 @@ func sendUserBack(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("sendUserBack: Id-tõendi andmed talletatud: ", dataForToken)
 
 	// Moodusta tagasisuunamis-URL
-	ru := returnURL +
+	ru := returnURI +
 		"?code=" + string(c) +
 		"&state=" + state +
 		"&nonce=" + nonce

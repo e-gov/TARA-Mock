@@ -2,6 +2,12 @@
 
 TARA-Mock on rakendus, mis etendab TARA autentimist. 
 
+[Ülevaade](#ülevaade)
+[Kasutusstsenaarium](#kasutusstsenaarium)
+[Lihtsustused](#lihtsustused)
+[Paigaldamine](#paigaldamine)
+[Klientrakenduse näidis](#klientrakenduse-näidis)
+
 ## Ülevaade
 
 TARA-Mock on mõeldud kasutamiseks siis, kui [TARA testteenuse](https://e-gov.github.io/TARA-Doku/Testimine) võimalused jäävad klientrakenduse funktsionaalsuste testimisel napiks. TARA testteenuse abil saab autentida väga väikese hulga TARA poolt ette antud testkasutajatega.
@@ -35,14 +41,18 @@ TARA-Mock on kirjutatud Go-s.
 TARA-Mock on tehtud rida lihtsustusi ja jäetud ära kontrolle:
 
 - aktsepteeritakse kõiki klientrakendusi (`client_id` väärtust ei kontrollita)
-- turvaelemendid (`state` ja `nonce`) antakse ühes sammus edasi HTML vormi peidetud väljadena
-- puudub päringuvõltsimise kaitse (CSRF)
+- klientrakenduse eelnev registreerimine ei ole nõutav
+- turvaelemendid (`state` ja `nonce`), samuti `return_uri`, antakse ühes sammus edasi HTML vormi peidetud väljadena
+- puudub päringuvõltsimise kaitse (CSRF). Märkus: Kuna TARA-Mock-s saab sisse logida suvalise kasutajana, siis ei ole kaitsel ka mõtet.
 - juhusõned genereeritakse tavalise (`math/rand`), mitte krüptograafilise juhuarvugeneraatoriga (`crypto/rand`)
-- ainult Eesti isikukoodiga isikute autentimine
-- piiratud logimine: TARA-Mock väljastab mõningast logiteavet konsoolile
+- minimaalne logimine; TARA-Mock väljastab mõningast logiteavet konsoolile
 - klientrakenduse salasõna ei kontrollita
-- identsustõendi väljastamisel `redirect_uri` ei kontrollita; identsustõend väljastatakse ainult volituskoodi alusel
+- identsustõendi väljastamisel `return_uri` ei kontrollita; identsustõend väljastatakse ainult volituskoodi alusel
 - identsustõendi väljastamisel ei kontrollita, kas tõend on aegunud
+- identsustõendite hoidlat ei puhastata aegunud tõenditest
+- ei kontrollita, et identsustõend väljastatakse ainult üks kord
+
+- TARA-Mock-is ei ole teostatud UserInfo otspunkt (autenditud kasutaja andmete küsimine pääsutõendiga (_access token_)). TARA pakub UserInfo otspunkti, kuid selle kasutamine ei ole soovitatav. Kõik vajalikud andmed saab kätte juba identsustõendist.
 
 ## Paigaldamine
 
@@ -78,15 +88,12 @@ Muudatusi saab teha ka hiljem. Siis tuleb TARA-Mock-i uuesti käivitada.
 4 Kontrolli ja vajadusel muuda TARA-Mock-is seadistatud hostinimesid ja porte. Vaikeseadistus on tehtud eeldustel:
 
 - TARA-Mock töötab arendaja masinas (`localhost`), pordil `8080`
-- rakendus, millest TARA-Mock-i poole pöördutakse (klientrakendus), töötab arendaja masinas (`localhost`), pordil `8081`
-- klientrakendusse tagasisuunamise URL on `https://localhost:8081/return`.
 
 Muuda failis `service/main.go` olev vaikeseadistus oma konfiguratsioonile vastavaks:
 
 ```
 const (
 	taraMockHost       = "localhost"
-	returnURL          = "https://localhost:8081/return"
 	httpServerPort     = ":8080"
 ...
 ```
@@ -106,28 +113,32 @@ TARA-Mock on klientrakenduse teenindamiseks valmis.
 
 ## Klientrakenduse näidis
 
-Klientrakenduse näidis töötab lokaalses masinas, pordil 8081. Otspunktid:
+TARA-Mock-ga kaasasolev klientrakenduse näidis pakub otspunkte:
 
 - `/health` - elutukse
 - `/` - avaleht; kasutaja saab sealt minna TARA-Mock-i autentima
 - `/login` - kasutaja suunamine TARA-Mock-i autentima
 - `/return` - autentimiselt tagasi suunatud kasutaja vastuvõtmine, identsustõendi pärimine TARA-Mock-st ja sisselogimise lõpuleviimine 
 
-TARA-Mock-ga kaasasoleva klientrakenduse kasutamiseks:
+Klientrakenduse kasutamiseks:
 
-- Masinas peab olema paigaldatud Go, versioon 1.11 või hilisem.
-- Klooni repo [https://github.com/e-gov/TARA-Mock](https://github.com/e-gov/TARA-Mock) masinasse.
-- Valmista ja paigalda võtmed ja serdid, vt [Serdid](docs/Serdid.md)
-- Vajadusel sea klientrakenduses õige TARA-Mock-i hostinimi (vaikimisi `localhost`), TARA-Mock-i ja klientrakenduse pordinumbrid (vaikimisi `8080` ja `8081`)
-- Käivita klientrakendus:
+1 Masinas peab olema paigaldatud Go, versioon 1.11 või hilisem.
+
+2 Klooni repo [https://github.com/e-gov/TARA-Mock](https://github.com/e-gov/TARA-Mock) masinasse.
+
+3 Kontrolli ja vajadusel muuda vaikeseadistus vastavaks oma konfiguratsioonile. Vaikeseadistus on tehtud eeldustel:
+
+- TARA-Mock-i hostinimi on `localhost` ja port on `8080`
+- klientrakenduse hostinimi on `localhost` ja port on `8081`
+
+4 Valmista ja paigalda võtmed ja serdid, vt [Serdid](docs/Serdid.md)
+
+5 Käivita klientrakendus:
 
 ```
 cd client
 go run .
 ```
 
-- Ava sirvikus klientrakenduse avaleht (vaikimisi `https://localhost:8081`)
-
-## TO DO
-
-- Võib teostada UserInfo otspunkti, kui selleks on nõudlus. TARA pakub UserInfo otspunkti, kuid selle kasutamine ei ole soovitatav. Kõik vajalikud andmed saab kätte juba identsustõendist. 
+6 Ava sirvikus klientrakenduse avaleht (vaikimisi `https://localhost:8081`)
+ 
