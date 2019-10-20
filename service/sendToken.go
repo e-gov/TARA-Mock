@@ -90,10 +90,16 @@ func sendIdentityToken(w http.ResponseWriter, r *http.Request) {
 		Nonce:     v.nonce,
 		Acr:       "high",
 	}
-	claims.ProfileAttributes.DateOfBirth = "1961-07-12"
+
+	// Moodusta sünnikp isikukoodist.
+	if dob, err := personCodeToDoB(v.sub); err != nil {
+		claims.ProfileAttributes.DateOfBirth = "1961-07-12"
+	} else {
+		claims.ProfileAttributes.DateOfBirth = dob
+	}
+
 	claims.ProfileAttributes.GivenName = v.givenName
 	claims.ProfileAttributes.FamilyName = v.familyName
-	// Vt: https://stackoverflow.com/questions/24809235/initialize-a-nested-struct
 
 	// Koosta veebitõend
 	// Token struktuuri vt:
@@ -139,3 +145,4 @@ func sendIdentityToken(w http.ResponseWriter, r *http.Request) {
 }
 
 // jwt teegi näide: https://github.com/dgrijalva/jwt-go/issues/141
+// Vt: https://stackoverflow.com/questions/24809235/initialize-a-nested-struct
