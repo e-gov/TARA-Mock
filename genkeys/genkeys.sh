@@ -2,10 +2,11 @@
 
 echo "--------------------------"
 echo "Skript moodustab TARA-Mock tööks vajalikud võtmed ja serdid."
-echo "Vt: https://github.com/e-gov/TARA-Mock/blob/master/Serdid.md"
+echo "Vt: https://github.com/e-gov/TARA-Mock/blob/master/docs/Turvalisus.md"
 
 echo "--------------------------"
-echo "### NB! Kasutusel Git for Windows tee-eraldajad"
+echo "### NB! subj väärtustes Kasutusel Git for Windows tee-eraldajad."
+echo "Linux-is asenda: // -> / ja \ -> /"
 
 echo
 echo "### 1 Valmistan CA võtme ja serdi"
@@ -27,7 +28,7 @@ openssl x509 \
   -subject -issuer
 
 echo
-echo "### 2 Valmistan privaatvõtme ja serdi TARA-Mock HTTPS serverile"
+echo "### 2 Valmistan TARA-Mock HTTPS privaatvõtme ja serdi"
 # Serditaotlus
 openssl req \
   -new \
@@ -58,7 +59,7 @@ openssl x509 \
   -subject -issuer
 
 echo
-echo "### 3 Identsustõendi allkirjastamise privaat- ja avaliku võtme gen-ne:"
+echo "### 3 Genereerin identsustõendi allkirjastamise privaat- ja avaliku võtme"
 openssl genrsa \
   -out idtoken.key \
   2048
@@ -70,14 +71,15 @@ echo
 echo "### 4 Eemaldan vanad võtmed ja serdid"
 rm -f ../service/vault/*.*
 rm -f ../client/vault/*.*
-echo "###   Paigaldan võtmed ja serdid TARA-Mock-i"
+
+echo "### 5 Paigaldan võtmed ja serdid TARA-Mock-i"
 cp rootCA.pem ../service/vault
 cp https.key ../service/vault
 cp https.crt ../service/vault
 cp idtoken.key ../service/vault
 cp idtoken.pub ../service/vault
 
-echo "###   Paigaldan võtmed ja serdid klientrakendusse"
+echo "### 6 Paigaldan võtmed ja serdid klientrakendusse"
 cp rootCA.pem ../client/vault
 cp https.key ../client/vault
 cp https.crt ../client/vault
@@ -85,6 +87,8 @@ cp https.crt ../client/vault
 echo "###   Võtmed ja serdid genereeritud ja paigaldatud"
 echo "###   Ära unusta sirvikusse usaldusankrut paigaldada"
 
+# -------------------
+# Abiteave
 # These work for application/json, but not for text/html in browser
 # openssl genrsa -out https.key 2048
 # openssl ecparam -genkey -name secp384r1 -out https.key

@@ -9,18 +9,19 @@ import (
 
 // authenticateUser võtab vastu klientrakendusest autentimisele
 // saadetud kasutaja ja kuvab talle autentimisdialoogi avalehe
-// (dialoogis ongi üks leht). (Kasutaja saabub päringuga otspunkti
-//	/oidc/authorize).
+// (dialoogis ongi üks leht). Kasutaja saabub päringuga otspunkti
+// /oidc/authorize.
 func authenticateUser(w http.ResponseWriter, r *http.Request) {
-	// OidcParams hoiab Klientrakendusest saadetud päringu OIDC parameetreid.
+	// OidcParams hoiab klientrakendusest saadetud päringu
+	// OpenID Connect kohaseid parameetreid.
 	type OidcParams struct {
 		RedirectURI  string // redirect_uri
-		Scope        string
-		State        string
+		Scope        string // scope
+		State        string // state
 		ResponseType string // response_type
 		ClientID     string // client_id
 		UILocales    string // ui_locales
-		Nonce        string
+		Nonce        string // nonce
 		AcrValues    string // acr_values
 	}
 
@@ -45,8 +46,8 @@ func authenticateUser(w http.ResponseWriter, r *http.Request) {
 	pr.AcrValues = getPtr("acr_values", r)
 
 	// Valmista ette malli parameetrid. Mallile saadetakse päringu-
-	// parameetrid (taustateabeks) ja identiteedid (isikud), kelle
-	// hulgas kasutaja saab valida sobiva.
+	// parameetrid (taustateabeks) ja etteantud identiteedid (isikud,
+	// kelle hulgast kasutaja saab valida sobiva.
 	type templateParams struct {
 		Request    OidcParams
 		Identities []Identity
@@ -56,7 +57,7 @@ func authenticateUser(w http.ResponseWriter, r *http.Request) {
 		Identities: identities,
 	}
 
-	// Loe mall, täida ja saada leht sirvikusse
+	// Loe mall, täida parameetritega ja saada leht sirvikusse.
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	p := filepath.Join("templates", "authenticateUser.html")
 	t, err := template.ParseFiles(p)

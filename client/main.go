@@ -11,23 +11,24 @@ import (
 )
 
 const (
-	// AppHost on käesoleva klientrakenduse hostinimi.
-	AppHost = "localhost"
-	// AppHTTPServerPort on käesoleva klientrakenduse HTTPS serveri port.
-	AppHTTPServerPort = ":8081"
-	// AppCert on käesoleva klientrakenduse HTTPS sert.
-	AppCert = "vault/https.crt"
-	// AppKey on käesoleva klientrakenduse HTTPS privaatvõti.
-	AppKey = "vault/https.key"
+	// klientrakenduse hostinimi
+	appHost = "localhost"
+	// klientrakenduse HTTPS serveri port
+	appPort = ":8081"
+	// klientrakenduse HTTPS sert.
+	appCert = "vault/https.crt"
+	// klientrakenduse HTTPS privaatvõti.
+	appKey = "vault/https.key"
 
 	// Usaldusankur TARA-Mock-i poole pöördumisel
 	rootCAFile = "vault/rootCA.pem"
 
-	// TARA-Mock
+	// TARA-Mock-i otspunktid
 	taraMockAuthorizeEndpoint = "https://localhost:8080/oidc/authorize"
 	taraMockTokenEndpoint     = "https://localhost:8080/oidc/token"
 	taraMockKeyEndpoint       = "https://localhost:8080/oidc/jwks"
 
+	// OpenID Connect kohane tagasisuunamis-URL
 	redirectURI = "https://localhost:8081/return"
 )
 
@@ -39,15 +40,16 @@ func main() {
 	http.HandleFunc("/login", loginUser)
 	http.HandleFunc("/return", finalize)
 
+	// fileServer serveerib kasutajaliidese muutumatuid faile.
 	fs := http.FileServer(http.Dir("static"))
-	http.Handle("/static/", http.StripPrefix("/static/", fs)) // fileServer serveerib kasutajaliidese muutumatuid faile.
+	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
 	// Käivita HTTPS server
 	log.Println("** Klientrakenduse näidis käivitatud pordil 8081 **")
 	err := http.ListenAndServeTLS(
-		AppHTTPServerPort,
-		AppCert,
-		AppKey,
+		appPort,
+		appCert,
+		appKey,
 		nil)
 	if err != nil {
 		log.Fatal(err)
@@ -58,13 +60,13 @@ func main() {
 func landingPage(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 
-	// Valmista ette malli parameetrid
+	// Valmista ette malli parameetrid.
 	type MalliParameetrid struct {
-		AppHost           string
-		AppHTTPServerPort string
-		RedirectURI       string
+		appHost     string
+		appPort     string
+		RedirectURI string
 	}
-	mp := MalliParameetrid{AppHost, AppHTTPServerPort, redirectURI}
+	mp := MalliParameetrid{appHost, appPort, redirectURI}
 
 	// Loe avalehe mall, täida ja saada sirvikusse.
 	p := filepath.Join("templates", "index.html")
@@ -90,7 +92,7 @@ func loginUser(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println("loginUser: Saadan autentimispäringu: ", ru)
 
-	// Suuna kasutaja TARA-Mock-i
+	// Suuna kasutaja TARA-Mock-i.
 	http.Redirect(w, r, ru, 301)
 }
 

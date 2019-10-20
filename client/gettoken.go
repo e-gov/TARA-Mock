@@ -124,22 +124,21 @@ func getIdentityToken(vk string) (string, bool) {
 	// fmt.Println("Saadud võtmed: ", string(jsonBytes))
 
 	// Teisenda võtmehulk (stringina) teegi lestrrat-go/jwx/jwk
-	// pakutud Go-kujule
-	// kSet tüüp on jwk.Set
+	// pakutud Go-kujule. kSet tüüp on jwk.Set.
 	kSet, err := jwk.ParseString(string(jsonBytes))
 	if err != nil {
 		log.Fatalln("Viga teisendamisel lestrrat-go/jwx/jwk kujule: ", err)
 	}
 	fmt.Println("Saadud võti kid = ", kSet.Keys[0].KeyID())
-	// Materialize() peaks jwk.Key-st tegema *rsa.PublicKey
+	// Materialize() peaks jwk.Key-st tegema *rsa.PublicKey.
 	m, err := kSet.Keys[0].Materialize()
 	if err != nil {
 		log.Printf("Avaliku RSA võtme moodustamine ebaõnnestus: %s", err)
 		return "Viga: Avaliku RSA võtme moodustamine ebaõnnestus", true
 	}
 	idTokenPublicKey = m.(*rsa.PublicKey)
-	// ----------------
 
+	// ----------------
 	// Päri identsustõend
 	// Koosta POST päringu keha
 	requestBody, err := json.Marshal(map[string]string{
@@ -201,15 +200,17 @@ func getIdentityToken(vk string) (string, bool) {
 	}
 	fmt.Println("----------")
 
-	// var myClaims MyCustomClaims
 	var myClaims MyCustomClaims
 
+	// Parsi tõend ilma allkirjakontrollita. Saaks ühitada eelmise
+	// parsimisega.
 	var p jwt.Parser
 	t, _, err := p.ParseUnverified(IDTR.IDToken, &myClaims)
 	if err != nil {
 		log.Printf("JWT parsimine ebaõnnestus: %s", err)
 		return "Identsustõendi töötlemine ebaõnnestus", true
 	}
+
 	fmt.Println("Tõendilt loetud:")
 	fmt.Println("  võtme id (kid): ", t.Header["kid"].(string))
 	fmt.Println("  algoritm (alg): ", t.Header["alg"].(string))

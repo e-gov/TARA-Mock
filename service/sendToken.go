@@ -88,11 +88,12 @@ func sendIdentityToken(w http.ResponseWriter, r *http.Request) {
 		Amr:       "mID",
 		State:     v.state,
 		Nonce:     v.nonce,
-		Acr:       "high",
+		Acr:       "high", // Tagatistase 'kõrge' )
 	}
 
 	// Moodusta sünnikp isikukoodist.
 	if dob, err := personCodeToDoB(v.sub); err != nil {
+		// Kui sünnikp ei saa moodustada, siis kasuta fiks-d väärtust
 		claims.ProfileAttributes.DateOfBirth = "1961-07-12"
 	} else {
 		claims.ProfileAttributes.DateOfBirth = dob

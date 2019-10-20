@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/rsa"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -10,22 +11,19 @@ import (
 	// Identsustõendi koostamiseks ja allkirjastamiseks
 	// Dok-n: https://godoc.org/github.com/dgrijalva/jwt-go
 	"github.com/dgrijalva/jwt-go"
-	// JWK (veebivõtme) toiminguteks
-	// Dok-n: https://godoc.org/github.com/lestrrat-go/jwx
-	// Kaalu allkirjastamispaketi kasutamist:
-	// "github.com/lestrrat-go/jwx/jws"
-	// Dok-n: https://godoc.org/github.com/lestrrat-go/jwx/jws
-	// Alternatiiv on ka: square/go-jose (v3), vt:
-	// https://godoc.org/github.com/square/go-jose
 )
 
 const (
-	taraMockHost       = "localhost"
-	httpServerPort     = ":8080"
-	taraMockCert       = "vault/https.crt"
-	taraMockKey        = "vault/https.key"
+	taraMockHost   = "localhost"
+	httpServerPort = ":8080"
+	// TARA-Mock-i HTTPS sert
+	taraMockCert = "vault/https.crt"
+	// TARA-Mock-i HTTPS privaatvõti
+	taraMockKey = "vault/https.key"
+	// TARA-Mock-i identsustõendi allkirjastamise avalik võti
 	idTokenPrivKeyPath = "vault/idtoken.key"
-	idTokenPubKeyPath  = "vault/idtoken.pub"
+	// TARA-Mock-i identsustõendi allkirjastamise privaatvõti
+	idTokenPubKeyPath = "vault/idtoken.pub"
 	// Identsustõendi allkirjavõtme identifikaator
 	kid = "taramock"
 )
@@ -67,11 +65,12 @@ func main() {
 	// Loe sisse identsustõendi allkirjastamise võtmepaar.
 	readRSAKeys()
 
+	// fileServer serveerib kasutajaliidese muutumatuid faile.
 	fs := http.FileServer(http.Dir("static"))
-	http.Handle("/static/", http.StripPrefix("/static/", fs)) // fileServer serveerib kasutajaliidese muutumatuid faile.
+	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
 	// Käivita HTTPS server
-	log.Println("** TARA-Mock käivitatud pordil 8080 **")
+	fmt.Printf("** TARA-Mock käivitatud pordil %v **\n", httpServerPort)
 	err := http.ListenAndServeTLS(
 		httpServerPort,
 		taraMockCert,
@@ -107,3 +106,9 @@ func readRSAKeys() {
 		log.Fatal(err)
 	}
 }
+
+// Kaalu allkirjastamispaketi kasutamist:
+// "github.com/lestrrat-go/jwx/jws"
+// Dok-n: https://godoc.org/github.com/lestrrat-go/jwx/jws
+// Alternatiiv on ka: square/go-jose (v3), vt:
+// https://godoc.org/github.com/square/go-jose

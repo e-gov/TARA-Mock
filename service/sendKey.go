@@ -6,12 +6,14 @@ import (
 	"net/http"
 	"strings"
 
+	// JWK (veebivõtme) toiminguteks
+	// Dok-n: https://godoc.org/github.com/lestrrat-go/jwx
 	"github.com/lestrrat-go/jwx/jwk"
 )
 
 // sendKey väljastab klientrakendusele identsustõendi allkirjastamisel
-// kasutatavale privaatvõtmele vastava avaliku võtme.package main
-// sendKey teostab OIDC avaliku võtme otspunkti oidc/jwks.
+// kasutatavale privaatvõtmele vastava avaliku võtme.
+// sendKey teostab OpenID Connect avaliku võtme otspunkti oidc/jwks.
 func sendKey(w http.ResponseWriter, r *http.Request) {
 	key, err := jwk.New(&signKey.PublicKey)
 	if err != nil {

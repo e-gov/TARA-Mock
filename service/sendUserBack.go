@@ -15,8 +15,6 @@ import (
 // sendUserBack teostab otspunkti /return.
 func sendUserBack(w http.ResponseWriter, r *http.Request) {
 
-	// TO DO: Lahenda tagasisuunamis-URL-i pordi edastamise probleem
-
 	r.ParseForm() // Parsi päringuparameetrid.
 
 	returnURI := getPtr("redirect_uri", r)
@@ -28,11 +26,11 @@ func sendUserBack(w http.ResponseWriter, r *http.Request) {
 	c = volituskood(randSeq(6))
 
 	// Kogu identsustõendi koostamiseks ja väljastamiseks vajalikud
-	// andmed..
+	// andmed.
 	var dataForToken dataForTokenType
 
 	// Selgita, millise identiteedi kasutaja valis. Kui valis etteantute
-	// hulgast, siis Form submit saatis elemendi isik=nr (0-based).
+	// hulgast, siis Form submit saatis elemendi isik=<nr> (0-based).
 	isikunr := getPtr("isik", r)
 
 	if isikunr != "" {
