@@ -1,4 +1,8 @@
-# Serdid
+# Turvalisus
+
+[Võtmeplaan](#võtmeplaan) ⚬ 
+[Võtmete ja sertide valmistamine](#võtmete-ja-sertide-valmistamine) ⚬ 
+[Turvalisus sirvikus](#sirviku-turvalisus)
 
 ## Võtmeplaan
 
@@ -51,6 +55,8 @@ openssl req \
   -subj "//C=EE\ST=\L=\O=Arendaja\CN=Arendaja"
 ```
 
+Kaitske CA privaatvõtit.
+
 2 TARA-Mock HTTPS serveri privaatvõtme (`https.key`) ja serdi (`https.crt`) valmistamine. Kuna TARA-Mock HTTPS server teenindab ka sirvikuid, siis on vaja serdile kantav väli `subjectAltName` määratleda eraldi failis `v3.ext`. Kui paigalduskohaks ei ole `localhost`, siis tuleb failis `v3.ext` seada õige hostinimi. 
 
 ```
@@ -89,7 +95,7 @@ openssl rsa \
 ```
 4 Võtmete ja sertide paigaldamine TARA-Mock-i ja klientrakendusse (vastavalt kaustadesse `service/vault` ja `client/vault`).
 
-## Sirvik
+## Turvalisus sirvikus
 
 Sirvikusse, millega TARA-Mock-i kasutatakse, tuleb paigaldada TARA-Mock-i CA sert. Sellega pannakse sirvik TARA-Mock-i usaldama. Usalduseta ei ava sirvik TARA-Mock-i kasutajaliidest.
 
@@ -98,7 +104,4 @@ Sirvikusse, millega TARA-Mock-i kasutatakse, tuleb paigaldada TARA-Mock-i CA ser
 
 Kui kasutate ka TARA-Mock-ga kaasas olevat klientrakendust, siis peab ka selle CA serdi paigaldama sirvikusse. Kui TARA-Mock-i ja klientrakenduse serdid anda välja ühe CA poolt, piisab ühest paigaldamisest. 
 
-Turvameetmed:
-
-- kaitske CA privaatvõtit
-- TARA-Mock-i kasutamise järel (kui rakendus sai testitud), eemaldage CA sert sirvikust.
+TARA-Mock-i kasutamise järel (kui rakendus sai testitud), eemaldage CA sert sirvikust.
