@@ -58,8 +58,8 @@ func getIdentityToken(vk string) (string, bool) {
 
 	// Loe kliendi HTTPS võti ja sert
 	cert, err := tls.LoadX509KeyPair(
-		AppCert,
-		AppKey)
+		appCert,
+		appKey)
 	if err != nil {
 		log.Fatal(err)
 	}
