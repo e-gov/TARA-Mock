@@ -56,18 +56,53 @@ TARA-Mock töötab pordil 8080. Paigalda TARA-Mock sobivasse masinasse. TARA-Moc
 
 Nt TARA-Mock kasutamisel oma masinas: `https://localhost:8080/health`.
 
-- Masinas peab olema paigaldatud Go, versioon 1.11 või hilisem.
-- Klooni repo [https://github.com/e-gov/TARA-Mock](https://github.com/e-gov/TARA-Mock) masinasse.
-- Seadista etteantud identiteedid, vt: [Etteantud identiteedid](docs/Etteantud.md)
-- Valmista ja paigalda võtmed ja serdid, vt [Serdid](docs/Serdid.md)
+1 Masinas peab olema paigaldatud Go, versioon 1.11 või hilisem.
+
+2 Klooni repo [https://github.com/e-gov/TARA-Mock](https://github.com/e-gov/TARA-Mock) masinasse.
+
+3 Kui soovid, muuda etteantud identiteete
+
+TARA-Mock-is määrab kasutaja ise identiteedi (isikukoodi, ees- ja perekonnanime), millega ta autenditakse. Selleks ta kas valib etteantud identiteetide hulgast või sisestab ise identiteeti.
+
+Tarkvaraga on kaasas 3 etteantud identiteeti. Etteantud identiteetide muutmiseks redigeeri faili `service/data.go`:
+
+```
+...
+		Identity{"Isikukood1", "Eesnimi1", "Perekonnanimi1"},
+		Identity{"Isikukood2", "Eesnimi2", "Perekonnanimi2"},
+		Identity{"Isikukood3", "Eesnimi3", "Perekonnanimi3"},
+...
+```
+Muudatusi saab teha ka hiljem. Siis tuleb TARA-Mock-i uuesti käivitada.
+
+4 Kontrolli ja vajadusel muuda TARA-Mock-is seadistatud hostinimesid ja porte. Vaikeseadistus on tehtud eeldustel:
+
+- TARA-Mock töötab arendaja masinas (`localhost`), pordil `8080`
+- rakendus, millest TARA-Mock-i poole pöördutakse (klientrakendus), töötab arendaja masinas (`localhost`), pordil `8081`
+- klientrakendusse tagasisuunamise URL on `https://localhost:8081/return`.
+
+Muuda failis `service/main.go` olev vaikeseadistus oma konfiguratsioonile vastavaks:
+
+```
+const (
+	taraMockHost       = "localhost"
+	returnURL          = "https://localhost:8081/return"
+	httpServerPort     = ":8080"
+...
+```
+
+5 Valmista ja paigalda võtmed ja serdid, vt [Serdid](docs/Serdid.md)
+
   - sh lisa sirvikusse TARA-Mock-i CA sert
-- Vajadusel muuda TARA-Mock-i porti (vaikimisi `8080`)
-- Käivita TARA-Mock:
+
+6 Käivita TARA-Mock:
 
 ```
 cd service
 go run .
 ```
+
+TARA-Mock on klientrakenduse teenindamiseks valmis.
 
 ## Klientrakenduse näidis
 
