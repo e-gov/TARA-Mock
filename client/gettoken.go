@@ -2,18 +2,61 @@ package main
 
 import (
 	"bytes"
+	"crypto/rsa"
 	"crypto/tls"
 	"crypto/x509"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
+
+	// Identsustõendi verifitseerimiseks
+	// Dok-n: https://godoc.org/github.com/dgrijalva/jwt-go
+	"github.com/dgrijalva/jwt-go"
+	// JWK (veebivõtme) toiminguteks
+	// Dok-n: https://godoc.org/github.com/lestrrat-go/jwx
+	"github.com/lestrrat-go/jwx/jwk"
 )
 
-// getIdentityToken pärib TARA-Mock-lt identsustõendi.
-func getIdentityToken(vk string) ([]byte, bool) {
+var idTokenPublicKey *rsa.PublicKey
 
-	// Lae kliendi võti ja sert
+// MyCustomClaims kirjeldab identsustõendi väited.
+type MyCustomClaims struct {
+	ProfileAttributes struct {
+		DateOfBirth string `json:"date_of_birth"`
+		GivenName   string `json:"given_name"`
+		FamilyName  string `json:"family_name"`
+	} `json:"profile_attributes"`
+	Amr   string `json:"amr"` // Autentimismeetod
+	State string `json:"state"`
+	Nonce string `json:"nonce"`
+	Acr   string `json:"acr"` // Autentimistase
+	// Vt: https://godoc.org/github.com/dgrijalva/jwt-go#StandardClaims
+	jwt.StandardClaims
+}
+
+// Valid kontrollib identsustõendi õigsust.
+func (MyCustomClaims) Valid() error {
+	return nil
+}
+
+// getKey tagastab identsustõendi allkirja avaliku võtme.
+// Vt: https://stackoverflow.com/questions/41077953/go-language-and-verify-jwt
+func getKey(token *jwt.Token) (interface{}, error) {
+	// idTokenPublicKey tüüp on jwk.Key. Kuidas sobib teegiga jwt??
+	// Vt näide: https://godoc.org/github.com/lestrrat-go/jwx/jwk
+	return idTokenPublicKey, nil
+}
+
+// getIdentityToken : 1) pärib TARA-Mock-lt identsustõendi allkirja
+// avaliku võtme (otspunktist /oidc/jwks); 2) pärib TARA-Mock-lt
+// identsustõendi; 3) parsib identsustõendi;
+// 4) tagastab identsustõendilt loetud isikuandmed, stringina.
+// TO DO: Löö f-deks. Probleem: kuidas http.Client üle kanda?
+func getIdentityToken(vk string) (string, bool) {
+
+	// Loe kliendi HTTPS võti ja sert
 	cert, err := tls.LoadX509KeyPair(
 		AppCert,
 		AppKey)
@@ -21,7 +64,7 @@ func getIdentityToken(vk string) ([]byte, bool) {
 		log.Fatal(err)
 	}
 
-	// Lae CA sert
+	// Loe CA sert
 	caCert, err := ioutil.ReadFile(
 		rootCAFile,
 	)
@@ -42,6 +85,62 @@ func getIdentityToken(vk string) ([]byte, bool) {
 	transport := &http.Transport{TLSClientConfig: tlsConfig}
 	client := &http.Client{Transport: transport}
 
+	// client := &http.Client{Timeout: 10 * time.Second}
+
+	// ----------------
+	// Päri allkirja avalik võti
+	resp1, err := client.Get(taraMockKeyEndpoint)
+	// resp1, err := client.Get("https://tara-test.ria.ee/oidc/jwks")
+	if err != nil {
+		log.Fatalln("Viga allkirja avaliku võtme pärimisel: ", err)
+	}
+	defer resp1.Body.Close()
+	fmt.Println("----")
+
+	type Key struct {
+		Kty string `json:"kty"`
+		Kid string `json:"kid"`
+		N   string `json:"n"`
+		E   string `json:"e"`
+	}
+
+	type KeySet struct {
+		// Keys []jwk.Key `json:"keys"`
+		Keys []Key `json:"keys"`
+	}
+
+	// Vt: https://stackoverflow.com/questions/17156371/how-to-get-json-response-from-http-get
+	decoder := json.NewDecoder(resp1.Body)
+	var data KeySet
+	err = decoder.Decode(&data)
+	if err != nil {
+		log.Fatalln("Viga võtmepäringu vastuse dekodeerimisel: ", err)
+	}
+	// fmt.Println("Saadud võti kid: ", data.Keys[0].Kid)
+	jsonBytes, err := json.Marshal(data)
+	if err != nil {
+		log.Fatalln("Viga JSON-kujule teisendamisel: ", err)
+	}
+	// fmt.Println("Saadud võtmed: ", string(jsonBytes))
+
+	// Teisenda võtmehulk (stringina) teegi lestrrat-go/jwx/jwk
+	// pakutud Go-kujule
+	// kSet tüüp on jwk.Set
+	kSet, err := jwk.ParseString(string(jsonBytes))
+	if err != nil {
+		log.Fatalln("Viga teisendamisel lestrrat-go/jwx/jwk kujule: ", err)
+	}
+	fmt.Println("Saadud võti kid = ", kSet.Keys[0].KeyID())
+	// Materialize() peaks jwk.Key-st tegema *rsa.PublicKey
+	m, err := kSet.Keys[0].Materialize()
+	if err != nil {
+		log.Printf("Avaliku RSA võtme moodustamine ebaõnnestus: %s", err)
+		return "Viga: Avaliku RSA võtme moodustamine ebaõnnestus", true
+	}
+	idTokenPublicKey = m.(*rsa.PublicKey)
+	// ----------------
+
+	// Päri identsustõend
 	// Koosta POST päringu keha
 	requestBody, err := json.Marshal(map[string]string{
 		"grant_type":   "authorization_code",
@@ -63,11 +162,81 @@ func getIdentityToken(vk string) ([]byte, bool) {
 	}
 	defer resp.Body.Close()
 
-	// Loeb päringu keha, kujule []byte
+	// Loe vastuse keha, kujule []byte
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		log.Fatalln(err)
 	}
+	// fmt.Println("Saadud vastus: ", string(body))
 
-	return body, true
+	type IDTokenResponse struct {
+		AccessToken string `json:"access_token"`
+		TokenType   string `json:"token_type"`
+		// "RECOMMENDED.  The lifetime in seconds of the access token."
+		// -- OAuth 2.0 spec
+		ExpiresIn int    `json:"expires_in"`
+		IDToken   string `json:"id_token"`
+	}
+	var IDTR IDTokenResponse
+
+	// Parsi JSON
+	if err := json.Unmarshal(body, &IDTR); err != nil {
+		log.Printf("Vastuse JSON parsimine ebaõnnestus: %s", err)
+	}
+	fmt.Println("token_type: ", IDTR.TokenType)
+
+	// Parsi ja kontrolli JWT
+	// Vt: https://stackoverflow.com/questions/41077953/go-language-and-verify-jwt
+	fmt.Println("Üritan kontrollida tõendit")
+	var p1 jwt.Parser
+	token1, err := p1.Parse(IDTR.IDToken, getKey)
+	if err != nil {
+		log.Printf("Identsustõendi kontroll ebaõnnestus %s", err)
+		return "Identsustõendi kontroll ebaõnnestus", true
+	}
+	fmt.Println("Tõendil on väited:")
+	claims1 := token1.Claims.(jwt.MapClaims)
+	for key, value := range claims1 {
+		fmt.Printf("%s\t%v\n", key, value)
+	}
+	fmt.Println("----------")
+
+	// var myClaims MyCustomClaims
+	var myClaims MyCustomClaims
+
+	var p jwt.Parser
+	t, _, err := p.ParseUnverified(IDTR.IDToken, &myClaims)
+	if err != nil {
+		log.Printf("JWT parsimine ebaõnnestus: %s", err)
+		return "Identsustõendi töötlemine ebaõnnestus", true
+	}
+	fmt.Println("Tõendilt loetud:")
+	fmt.Println("  võtme id (kid): ", t.Header["kid"].(string))
+	fmt.Println("  algoritm (alg): ", t.Header["alg"].(string))
+	fmt.Println("  tüüp (typ): ", t.Header["typ"].(string))
+	claims := t.Claims.(*MyCustomClaims)
+	fmt.Printf("  state %v\n", claims.State)
+	fmt.Printf("  nonce %v\n", claims.Nonce)
+	fmt.Printf("  autentimismeetod %v\n", claims.Amr)
+	fmt.Printf("  tagatistase %v\n", claims.Acr)
+	fmt.Println("    -- standardväited --")
+	fmt.Printf("  id (jti): %v\n", claims.StandardClaims.Id)
+	fmt.Printf("  väljaandja (iss): %v\n", claims.StandardClaims.Issuer)
+	fmt.Printf("  (aud): %v\n", claims.StandardClaims.Audience)
+	fmt.Printf("  kehtib kuni (exp): %v\n", claims.StandardClaims.ExpiresAt)
+	fmt.Printf("  väljaandmiskp (iat): %v\n", claims.StandardClaims.IssuedAt)
+	fmt.Printf("  mitte enne (nbf): %v\n", claims.StandardClaims.NotBefore)
+	fmt.Printf("  subjekt (sub): %v\n", claims.StandardClaims.Subject)
+	fmt.Println("    -- isiku profiil --")
+	fmt.Printf("  eesnimi %v\n", claims.ProfileAttributes.GivenName)
+	fmt.Printf("  perekonnanimi %v\n", claims.ProfileAttributes.FamilyName)
+	fmt.Printf("  sünniaeg %v\n", claims.ProfileAttributes.DateOfBirth)
+
+	return claims.StandardClaims.Subject + ", " +
+		claims.ProfileAttributes.GivenName + ", " +
+		claims.ProfileAttributes.FamilyName + ", " +
+		claims.ProfileAttributes.DateOfBirth, true
 }
+
+// Token Claim tüübikinnitamise (type assertion) näide:
+// https://github.com/gomango/clientside-skeleton/blob/master/main.go#L73

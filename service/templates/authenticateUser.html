@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TARA-Mock</title>
+
+    <!-- JQuery -->
+    <script src="https://code.jquery.com/jquery.min.js"></script>
+
+    <!-- Material Design icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <link rel="stylesheet" type="text/css" href="/static/styles.css" />
+
+  </head>
+
+  <body>
+    <div class="pealkiri">
+      <h1>
+        TARA-Mock <sup class="hoiatus">NOT FOR PRODUCTION USE</sup>
+      </h1>
+    </div>
+    <div>
+      Päring:
+      redirect_uri = <code>{{ .Request.RedirectURI }}</code>,<br>
+      scope = <code>{{ .Request.Scope }}</code>,
+      state = <code>{{ .Request.State }}</code>,
+      response_type = <code>{{ .Request.ResponseType }}</code>,
+      client_id = <code>{{ .Request.ClientID }}</code>,
+      ui_locales = <code>{{ .Request.UILocales }}</code>,
+      nonce = <code>{{ .Request.Nonce }}</code>,
+      acr_values = <code>{{ .Request.AcrValues }}</code>
+    </div>
+    <div class="note">
+      Vali isik, kellena sisened
+    </div>
+    <div class="Isikuvalikuala">
+      <div class="paan">
+        <form action="/back" method="POST">
+          <!-- Identiteedid (isikud), radio button rühmana -->
+          <!-- 
+            checked pannakse igale, kehtima jääb viimane.
+          -->
+          <div>
+            {{ range $nr, $isik := .Identities }}
+            <p>
+              <input type="radio" id="isik{{$nr}}" name="isik" value="{{$nr}}" checked>
+              <label for="isik{{$nr}}">
+                {{ .Isikukood }} {{ .Eesnimi }} {{ .Perekonnanimi }}
+              </label>
+            </p>
+            {{end}}
+          </div>
+
+          <!-- Turvaelemendid, peidetud väljadena -->
+          <input type="hidden" id="redirect_uri" name="redirect_uri"
+            value="{{ .Request.RedirectURI }}">
+          <input type="hidden" id="state" name="state"
+            value="{{ .Request.State }}">
+          <input type="hidden" id="nonce" name="nonce"
+            value="{{ .Request.Nonce }}">
+
+          <input type="submit" value="kinnita" class="nupp" />
+        </form>
+
+      </div>
+      <div class="vahepaan">
+        või
+      </div>
+      <div class="paan">
+        <form action="/back" method="POST">
+          <!-- Turvaelemendid, peidetud väljadena -->
+          <input type="hidden" id="redirect_uri" name="redirect_uri"
+            value="{{ .Request.RedirectURI }}">
+          <input type="hidden" id="state" name="state"
+            value="{{ .Request.State }}">
+          <input type="hidden" id="nonce" name="nonce"
+            value="{{ .Request.Nonce }}">
+
+          <p>
+            <label>isikukood:</label><br>
+            <input name="idcode" type="text" value="" size="11">
+          </p>
+          <p>
+            <label>eesnimi:</label><br>
+            <input name="firstname" type="text" value="">
+          </p>
+          <p>
+            <label>perekonnanimi:</label><br>
+            <input name="lastname" type="text" value=""><br>
+          </p>
+          <p>
+            <input type="submit" value="kinnita" class="nupp" />
+          </p>
+        </form>
+      </div>
+    </div>
+
+    <div>
+    </div>
+  </body>
+
+</html>

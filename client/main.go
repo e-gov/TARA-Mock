@@ -26,16 +26,10 @@ const (
 	// TARA-Mock
 	taraMockAuthorizeEndpoint = "https://localhost:8080/oidc/authorize"
 	taraMockTokenEndpoint     = "https://localhost:8080/oidc/token"
-	redirectURI               = "https://localhost:8081/return"
-)
+	taraMockKeyEndpoint       = "https://localhost:8080/oidc/jwks"
 
-// PassParams koondab lehele "Autenditud" edastatavaid väärtusi.
-type PassParams struct {
-	Code        string
-	State       string
-	Nonce       string
-	Isikuandmed string
-}
+	redirectURI = "https://localhost:8081/return"
+)
 
 func main() {
 
@@ -68,9 +62,9 @@ func landingPage(w http.ResponseWriter, r *http.Request) {
 	type MalliParameetrid struct {
 		AppHost           string
 		AppHTTPServerPort string
+		RedirectURI       string
 	}
-	mp := MalliParameetrid{AppHost, AppHTTPServerPort}
-	fmt.Println(mp)
+	mp := MalliParameetrid{AppHost, AppHTTPServerPort, redirectURI}
 
 	// Loe avalehe mall, täida ja saada sirvikusse.
 	p := filepath.Join("templates", "index.html")
@@ -90,8 +84,11 @@ func loginUser(w http.ResponseWriter, r *http.Request) {
 		url.PathEscape(redirectURI) + "&" +
 		"scope=openid&" +
 		"state=1111&" +
+		"nonce=2222&" +
 		"response_type=code&" +
 		"client_id=1"
+
+	fmt.Println("loginUser: Saadan autentimispäringu: ", ru)
 
 	// Suuna kasutaja TARA-Mock-i
 	http.Redirect(w, r, ru, 301)
@@ -102,6 +99,13 @@ func loginUser(w http.ResponseWriter, r *http.Request) {
 // lõpule - saadab sirvikusse lehe "autenditud". (Otspunkt /client/return).
 func finalize(w http.ResponseWriter, r *http.Request) {
 
+	// PassParams koondab lehele "Autenditud" edastatavaid väärtusi.
+	type PassParams struct {
+		Code        string
+		State       string
+		Nonce       string
+		Isikuandmed string
+	}
 	var ps PassParams
 
 	r.ParseForm() // Parsi päringuparameetrid.
@@ -117,9 +121,9 @@ func finalize(w http.ResponseWriter, r *http.Request) {
 		log.Fatalln("Identsustõendi pärimine ebaõnnestus")
 	}
 
-	fmt.Println("Klient: main: Saadud identsustõend: ", string(t))
+	fmt.Println("finalize: Saadud identsustõend: ", string(t))
 
-	ps.Isikuandmed = string(t)
+	ps.Isikuandmed = t
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	// Loe lehe "Autenditud" vmall, täida ja saada sirvikusse.

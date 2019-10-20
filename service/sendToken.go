@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"time"
 
@@ -14,9 +15,9 @@ type Claims struct {
 	Jti               string `json:"jti"`
 	Issuer            string `json:"iss"`
 	Audience          string `json:"aud"`
-	ExpiresAt         string `json:"exp"`
-	IssuedAt          string `json:"iat"`
-	NotBefore         string `json:"nbf"`
+	ExpiresAt         int64  `json:"exp"`
+	IssuedAt          int64  `json:"iat"`
+	NotBefore         int64  `json:"nbf"`
 	Subject           string `json:"sub"`
 	ProfileAttributes struct {
 		DateOfBirth string `json:"date_of_birth"`
@@ -34,8 +35,9 @@ func (Claims) Valid() error {
 	return nil
 }
 
-// SendIdentityToken väljastab klientrakendusele identsustõendi (OIDC identsustõendi otspunkt /oidc/token).
-func SendIdentityToken(w http.ResponseWriter, r *http.Request) {
+// sendIdentityToken väljastab klientrakendusele identsustõendi
+// (otspunkt /oidc/token).
+func sendIdentityToken(w http.ResponseWriter, r *http.Request) {
 	// Võta päringust volituskood, seejärel võta volituskoodile
 	// vastavad identsustõendi andmed, koosta identsustõend ja saada
 	// päringu vastuses.
@@ -48,29 +50,29 @@ func SendIdentityToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// IDTokenReqBody on vastuvõetava identsustõendi päringu keha
+	// struktuur.
+	type idTokenReqBody struct {
+		GrantType  string      `json:"grant_type"`
+		Code       volituskood `json:"code"`
+		RequestURI string      `json:"request_uri"`
+	}
+
 	// Paki päringu keha lahti (b -> msg).
-	var msg IDTokenReqBody
+	var msg idTokenReqBody
 	err = json.Unmarshal(b, &msg)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	// Võta identsustõend (v) mälus hoitavast identsustõendite hoidlast.
+	// Võta identsustõendile vajalikud andmed (v) mälus hoitavast
+	// identsustõendite andmete hoidlast.
 	v, ok := idToendid[msg.Code]
 	if !ok {
-		http.Error(w, "Identsustõend ei eksisteeri", 404)
+		http.Error(w, "Identsustõendile vajalikke andmeid ei leia", 404)
 		return
 	}
-
-	/* Primitiivne meetod: Koosta identsustõend
-	mt := IdentityToken{v.sub, v.givenName, v.familyName}
-	output, err := json.Marshal(mt)
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-	*/
 
 	// Koosta JWT
 	// Koosta JWT väited
@@ -79,9 +81,9 @@ func SendIdentityToken(w http.ResponseWriter, r *http.Request) {
 		Issuer:   "TARA-Mock",
 		Audience: "Klientrakendus",
 		// Identsustõendi kehtivusaeg - 1 minute
-		ExpiresAt: string(time.Now().Add(1 * time.Minute).Unix()),
-		IssuedAt:  string(time.Now().Unix()),
-		NotBefore: string(time.Now().Unix()),
+		ExpiresAt: time.Now().Add(1 * time.Minute).Unix(),
+		IssuedAt:  time.Now().Unix(),
+		NotBefore: time.Now().Unix(),
 		Subject:   v.sub,
 		Amr:       "mID",
 		State:     v.state,
@@ -93,22 +95,46 @@ func SendIdentityToken(w http.ResponseWriter, r *http.Request) {
 	claims.ProfileAttributes.FamilyName = v.familyName
 	// Vt: https://stackoverflow.com/questions/24809235/initialize-a-nested-struct
 
-	// Allkirjavõti
-	var jwtKey = []byte("my_secret_key")
-
 	// Koosta veebitõend
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	// Token struktuuri vt:
+	// https://github.com/dgrijalva/jwt-go/blob/master/token.go#L23
+	// Oluline näide:
+	// https://gist.github.com/cryptix/45c33ecf0ae54828e63b
+	token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
+	token.Header["kid"] = "taramock"
 	// Create the JWT string
-	tokenString, err := token.SignedString(jwtKey)
+	tokenString, err := token.SignedString(signKey)
 	if err != nil {
+		log.Printf("Viga veebitõendi allkirjastamisel: %s", err)
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	// Koosta vastuse keha
+	type IDTokenResponse struct {
+		AccessToken string `json:"access_token"`
+		TokenType   string `json:"token_type"`
+		// "RECOMMENDED.  The lifetime in seconds of the access token."
+		// -- OAuth 2.0 spec
+		ExpiresIn int    `json:"expires_in"`
+		IDToken   string `json:"id_token"`
+	}
+	var IDTR IDTokenResponse
+	IDTR.AccessToken = "eiolekasutusel"
+	IDTR.TokenType = "bearer"
+	IDTR.ExpiresIn = 3600
+	IDTR.IDToken = tokenString
+
+	saadetis, err := json.Marshal(IDTR)
+	if err != nil {
+		log.Printf("Viga veebitõendi väljastamisel: %s", err)
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
 	// Väljasta
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.Write([]byte(tokenString))
-
-	// Primitiivne meetod:
-	// w.Write(output)
+	w.Header().Set("Content-Type", "application/json;charset=utf-8")
+	//	w.Write([]byte(tokenString))
+	w.Write(saadetis)
 }
+
+// jwt teegi näide: https://github.com/dgrijalva/jwt-go/issues/141
