@@ -18,7 +18,9 @@ TARA-Mock on reaalse TARA-ga ühilduv, s.t TARA-Mock ja TARA on üksteisega vahe
 
 TARA-Mock juures on ka klientrakenduse näidis.
 
-TARA-Mock ei ole mõeldud kasutamiseks toodangus. TARA-Mock ei ole mõeldud ka TARA-ga liidestamise testimiseks - sest TARA-Mock-is on ära jäetud mitmeid toodangus vajalikke kontrolle (vt allpool).
+TARA-Mock ei ole mõeldud kasutamiseks toodangus.
+
+TARA-Mock ei ole mõeldud ka TARA-ga liidestamise testimiseks, sest TARA-Mock-is on ära jäetud mitmeid toodangus vajalikke kontrolle (vt allpool). TARA-ga liidestamise testimiseks on [TARA testteenus](https://e-gov.github.io/TARA-Doku/Testimine).
 
 TARA-Mock on kirjutatud Go-s.
 
@@ -47,12 +49,22 @@ TARA-Mock on tehtud rida lihtsustusi ja jäetud ära kontrolle:
 - juhusõned genereeritakse tavalise (`math/rand`), mitte krüptograafilise juhuarvugeneraatoriga (`crypto/rand`)
 - minimaalne logimine; TARA-Mock väljastab mõningast logiteavet konsoolile
 - klientrakenduse salasõna ei kontrollita
+- parameetreid `scope` ja `response_type` ei kontrollita
+- parameetrid `ui_locales` ei kontrollita ega toetata; TARA-Mock-i kasutajaliides on eesti keeles
+- parameetrit `acr_values` ei kontrollita; identsustõend väljastatakse alati väite (_claim_) `acr` (tagatistase) väärtusega `high`
 - identsustõendi väljastamisel `return_uri` ei kontrollita; identsustõend väljastatakse ainult volituskoodi alusel
 - identsustõendi väljastamisel ei kontrollita, kas tõend on aegunud
 - identsustõendite hoidlat ei puhastata aegunud tõenditest
 - ei kontrollita, et identsustõend väljastatakse ainult üks kord
-
+- isikukoodi ei kontrollita; kui `date_of_birth` väärtust ei saa isikukoodist moodustada, siis tagastatakse väärtus `1961-07-12` 
+- autentimismeetodina näidatakse alati `mID`
 - TARA-Mock-is ei ole teostatud UserInfo otspunkt (autenditud kasutaja andmete küsimine pääsutõendiga (_access token_)). TARA pakub UserInfo otspunkti, kuid selle kasutamine ei ole soovitatav. Kõik vajalikud andmed saab kätte juba identsustõendist.
+
+Mida siis kontrollitakse?
+
+- `state` ja `nonce` peegeldatakse tagasi, nii nagu OIDC protokoll ette näeb.
+- `return_uri` peab olema kehtiv - muidu ei jõua kasutaja rakendusse tagasi.
+
 
 ## Paigaldamine
 
