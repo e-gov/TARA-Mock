@@ -1,7 +1,7 @@
 # Turvalisus
 
-[Võtmeplaan](#võtmeplaan) ⚬ 
-[Võtmete ja sertide valmistamine](#võtmete-ja-sertide-valmistamine) ⚬ 
+[Võtmeplaan](#võtmeplaan) · 
+[Võtmete ja sertide valmistamine](#võtmete-ja-sertide-valmistamine) · 
 [Turvalisus sirvikus](#turvalisus-sirvikus)
 
 ## Võtmeplaan

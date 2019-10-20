@@ -2,11 +2,11 @@
 
 TARA-Mock on rakendus, mis etendab TARA autentimist. 
 
-[Ülevaade](#ülevaade) ⚬ 
-[Kasutusstsenaarium](#kasutusstsenaarium) ⚬ 
-[Lihtsustused](#lihtsustused) ⚬ 
-[Paigaldamine](#paigaldamine) ⚬ 
-[Klientrakenduse näidis](#klientrakenduse-näidis) ⚬ 
+[Ülevaade](#ülevaade) · 
+[Kasutusstsenaarium](#kasutusstsenaarium) · 
+[Lihtsustused](#lihtsustused) · 
+[Paigaldamine](#paigaldamine) · 
+[Klientrakenduse näidis](#klientrakenduse-näidis) · 
 [Turvalisus](docs/Turvalisus.md)
 
 ## Ülevaade
