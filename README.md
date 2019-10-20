@@ -114,7 +114,7 @@ const (
 ...
 ```
 
-5 Valmista ja paigalda võtmed ja serdid, vt [Serdid](docs/Serdid.md)
+5 Valmista ja paigalda võtmed ja serdid, vt [Turvalisus](docs/Turvalisus.md)
 
   - sh lisa sirvikusse TARA-Mock-i CA sert.
 
@@ -127,7 +127,8 @@ go run .
 
 7 Liidesta klientrakendus TARA-Mock-ga. Selleks tuleb klientrakenduse konfiguratsioonis seada:
 
-- TARA-Mock-i hostinimi ja port. Otspunktide nimed on samad, mis TARA-s, neid ei ole vaja muuta. Kui kasutada TARA-Mock-i instantsi, mis ei ole sinud kontrolli all, siis ära kasutada test-TARA klientrakenduse salasõna; sea salasõnaks muu väärtus; TARA-Mock ei kontrolli salasõna.
+- TARA-Mock-i hostinimi ja port. Otspunktide nimed on samad, mis TARA-s, neid ei ole vaja muuta.
+- Kui kasutad TARA-Mock-i instantsi, mis ei ole sinu kontrolli all, siis ära kasuta test-TARA klientrakenduse salasõna; sea salasõnaks muu väärtus; TARA-Mock ei kontrolli salasõna.
 - TARA-Mock-i CA sert usaldusankruks (s.t klientrakendus tuleb panna TARA-Mock-i usaldama).
 
 ## Klientrakenduse näidis

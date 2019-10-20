@@ -2,7 +2,7 @@
 
 [Võtmeplaan](#võtmeplaan) ⚬ 
 [Võtmete ja sertide valmistamine](#võtmete-ja-sertide-valmistamine) ⚬ 
-[Turvalisus sirvikus](#sirviku-turvalisus)
+[Turvalisus sirvikus](#turvalisus-sirvikus)
 
 ## Võtmeplaan
 
