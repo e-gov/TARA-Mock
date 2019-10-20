@@ -11,17 +11,17 @@ TARA-Mock on rakendus, mis teeb TARA autentimist suvaliste testkasutajatega.
 
 ## Ülevaade
 
-TARA-Mock on mõeldud kasutamiseks siis, kui [TARA testteenuse](https://e-gov.github.io/TARA-Doku/Testimine) võimalused jäävad klientrakenduse funktsionaalsuste testimisel napiks. TARA testteenuse abil saab autentida väga väikese hulga TARA poolt ette antud testkasutajatega.
+TARA-Mock on mõeldud kasutamiseks siis, kui [TARA testteenuse](https://e-gov.github.io/TARA-Doku/Testimine) võimalused jäävad klientrakenduse testimisel napiks.
 
-TARA-Mock seevastu võimaldab kasutajal valida autentimise dialoogis identiteet  TARA-Mock seadistuses etteantud identiteetide hulgast või sisestada ise isikukood, ees- ja perekonnanimi, mille all soovitakse sisse logida. Sisuliselt saab sisse logida ükskõik millise identiteediga.
+TARA testteenusega saab autentida ainult väga väikese hulga TARA poolt ette antud testkasutajatega.
 
-TARA-Mock on reaalse TARA-ga ühilduv, s.t TARA-Mock ja TARA on üksteisega vahetatavad lihtsa seadistusega.
+TARA-Mock seevastu võimaldab kasutajal valida autentimise dialoogis identiteet TARA-Mock seadistuses etteantud identiteetide hulgast või sisestada ise isikukood, ees- ja perekonnanimi, mille all soovitakse sisse logida. Sisuliselt saab sisse logida ükskõik millise identiteediga.
+
+TARA-Mock on reaalse TARA-ga ühilduv, s.t TARA-Mock ja TARA on üksteisega vahetatavad lihtsa seadistamisega.
 
 TARA-Mock juures on ka klientrakenduse näidis.
 
-TARA-Mock ei ole mõeldud kasutamiseks toodangus.
-
-TARA-Mock ei ole mõeldud ka TARA-ga liidestamise testimiseks, sest TARA-Mock-is on ära jäetud mitmeid toodangus vajalikke kontrolle (vt allpool). TARA-ga liidestamise testimiseks on [TARA testteenus](https://e-gov.github.io/TARA-Doku/Testimine).
+TARA-Mock ei ole mõeldud kasutamiseks toodangus. TARA-Mock ei ole mõeldud ka TARA-ga liidestamise testimiseks, sest TARA-Mock-is on ära jäetud mitmeid toodangus vajalikke kontrolle (vt allpool). TARA-ga liidestamise testimiseks on [TARA testteenus](https://e-gov.github.io/TARA-Doku/Testimine).
 
 TARA-Mock on kirjutatud Go-s.
 
