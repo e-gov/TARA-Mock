@@ -57,6 +57,7 @@ func main() {
 	// Go-s "/" käsitleb ka need teed, millele oma käsitlejat ei leidu.
 	http.HandleFunc("/", landingPage)
 	http.HandleFunc("/health", healthCheck)
+	http.HandleFunc("/oidc/.well-known/openid-configuration", sendConf)
 	http.HandleFunc("/oidc/authorize", authenticateUser)
 	http.HandleFunc("/back", sendUserBack)
 	http.HandleFunc("/oidc/token", sendIdentityToken)

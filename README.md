@@ -62,7 +62,6 @@ TARA-Mock on tehtud rida lihtsustusi ja jäetud ära kontrolle:
 - ei kontrollita sisestatud nimede vastavust keelenormile
 - autentimismeetodina näidatakse alati `mID`
 - TARA-Mock-is ei ole teostatud UserInfo otspunkt (autenditud kasutaja andmete küsimine pääsutõendiga (_access token_)). TARA pakub UserInfo otspunkti, kuid selle kasutamine ei ole soovitatav. Kõik vajalikud andmed saab kätte juba identsustõendist
-- TARA-Mock-is ei ole teostatud teenuseteabe otspunkt (`/oidc/.well-known/openid-configuration`)
 
 Mida siis kontrollitakse?
 
@@ -77,6 +76,7 @@ TARA-Mock pakub otspunkte:
 
 - `/health` - elutukse
 - `/` - avaleht teabega TARA-Makett kohta
+- `/oidc/.well-known/openid-configuration` - teenuseteabe otspunkt
 - `/oidc/authorize` - autentimisele suunamine
 - `/token` - identsustõendi väljastamine
 - `/oidc/jwks` - identsustõendi avalik võti

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"html/template"
@@ -46,13 +47,47 @@ func landingPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	t.Execute(w, nil)
-
 }
 
-// healthCheck pakub elutukset (/health).
-func healthCheck(w http.ResponseWriter, r *http.Request) {
+// sendConf saadab OpenID Connect seadistuse (otspunkt
+// .well-known/openid-configuration).
+func sendConf(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
-	io.WriteString(w, `{"name":"TARA-Mock", "status":"ok"}`)
+
+	type Conf struct {
+		Issuer                           string   `json:"issuer"`
+		ScopesSupported                  []string `json:"scopes_supported"`
+		ResponseTypesSupported           []string `json:"response_types_supported"`
+		SubjectTypesSupported            []string `json:"subject_types_supported"`
+		ClaimTypesSupported              []string `json:"claim_types_supported"`
+		ClaimsSupported                  []string `json:"claims_supported"`
+		GrantTypesSupported              []string `json:"grant_types_supported"`
+		IDTokenSigningAlgValuesSupported []string `json:"id_token_signing_alg_values_supported"`
+		UILocalesSupported               []string `json:"ui_locales_supported"`
+		TokenEndpoint                    string   `json:"token_endpoint"`
+		UserinfoEndpoint                 string   `json:"userinfo_endpoint"`
+		AuthorizationEndpoint            string   `json:"authorization_endpoint"`
+		JwksURI                          string   `json:"jwks_uri"`
+	}
+
+	conf := Conf{
+		Issuer:                           "https://" + taraMockHost,
+		ScopesSupported:                  []string{"openid", "idcard", "mid", "banklink", "smartid", "eidas", "eidasonly", "email"},
+		ResponseTypesSupported:           []string{"code"},
+		SubjectTypesSupported:            []string{"public", "pairwise"},
+		ClaimTypesSupported:              []string{"normal"},
+		ClaimsSupported:                  []string{"sub", "given_name", "family_name", "date_of_birth", "email", "email_verified"},
+		GrantTypesSupported:              []string{"authorization_code"},
+		IDTokenSigningAlgValuesSupported: []string{"RS256"},
+		UILocalesSupported:               []string{"et", "en", "ru"},
+		TokenEndpoint:                    "https://" + taraMockHost + httpServerPort + "/oidc/token",
+		UserinfoEndpoint:                 "https://" + taraMockHost + httpServerPort + "/oidc/profile",
+		AuthorizationEndpoint:            "https://" + taraMockHost + httpServerPort + "/oidc/authorize",
+		JwksURI:                          "https://" + taraMockHost + httpServerPort + "/oidc/jwks",
+	}
+
+	json.NewEncoder(w).Encode(conf)
+
 }
 
 // personCodeToDoB tagastab isikukoodi põhjal arvutatud sünnikuupäeva.
@@ -81,4 +116,10 @@ func personCodeToDoB(c string) (dob string, err error) {
 		return dob, nil
 	}
 	return "", errors.New("Isikukood liiga lühike")
+}
+
+// healthCheck pakub elutukset (/health).
+func healthCheck(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Content-Type", "application/json")
+	io.WriteString(w, `{"name":"TARA-Mock", "status":"ok"}`)
 }
