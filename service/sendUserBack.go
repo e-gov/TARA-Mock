@@ -20,6 +20,7 @@ func sendUserBack(w http.ResponseWriter, r *http.Request) {
 	returnURI := getPtr("redirect_uri", r)
 	state := getPtr("state", r)
 	nonce := getPtr("nonce", r)
+	clientID := getPtr("client_id", r)
 
 	// Genereeri volituskood
 	var c volituskood
@@ -27,7 +28,7 @@ func sendUserBack(w http.ResponseWriter, r *http.Request) {
 
 	// Kogu identsustõendi koostamiseks ja väljastamiseks vajalikud
 	// andmed.
-	var dataForToken dataForTokenType
+	var forToken forTokenType
 
 	// Selgita, millise identiteedi kasutaja valis. Kui valis etteantute
 	// hulgast, siis Form submit saatis elemendi isik=<nr> (0-based).
@@ -40,26 +41,27 @@ func sendUserBack(w http.ResponseWriter, r *http.Request) {
 			fmt.Println("sendUserBack: Viga vormist saadud andmete kasutamisel")
 			i = 0 // Kasuta esimest etteantud identiteeti
 		}
-		dataForToken.sub = identities[i].Isikukood
-		dataForToken.givenName = identities[i].Eesnimi
-		dataForToken.familyName = identities[i].Perekonnanimi
+		forToken.sub = identities[i].Isikukood
+		forToken.givenName = identities[i].Eesnimi
+		forToken.familyName = identities[i].Perekonnanimi
 	} else {
 		// Kasutaja ei valinud etteantud identiteetide seast, vaid
 		// sisestas identiteedi ise.
-		dataForToken.sub = getPtr("idcode", r)
-		dataForToken.givenName = getPtr("firstname", r)
-		dataForToken.familyName = getPtr("lastname", r)
+		forToken.sub = getPtr("idcode", r)
+		forToken.givenName = getPtr("firstname", r)
+		forToken.familyName = getPtr("lastname", r)
 	}
 
-	dataForToken.state = state
-	dataForToken.nonce = nonce
+	forToken.clientID = clientID
+	forToken.state = state
+	forToken.nonce = nonce
 
 	// ..ja pane tallele
 	mutex.Lock()
-	idToendid[c] = dataForToken
+	idToendid[c] = forToken
 	mutex.Unlock()
 
-	fmt.Println("sendUserBack: Id-tõendi andmed talletatud: ", dataForToken)
+	fmt.Println("sendUserBack: Id-tõendi andmed talletatud: ", forToken)
 
 	// Moodusta tagasisuunamis-URL
 	ru := returnURI +

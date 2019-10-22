@@ -13,21 +13,6 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
-const (
-	taraMockHost   = "localhost"
-	httpServerPort = ":8080"
-	// TARA-Mock-i HTTPS sert
-	taraMockCert = "vault/https.crt"
-	// TARA-Mock-i HTTPS privaatvõti
-	taraMockKey = "vault/https.key"
-	// TARA-Mock-i identsustõendi allkirjastamise avalik võti
-	idTokenPrivKeyPath = "vault/idtoken.key"
-	// TARA-Mock-i identsustõendi allkirjastamise privaatvõti
-	idTokenPubKeyPath = "vault/idtoken.pub"
-	// Identsustõendi allkirjavõtme identifikaator
-	kid = "taramock"
-)
-
 // Identsustõendi allkirjastamise RSA võtmepaar
 var (
 	verifyKey *rsa.PublicKey
@@ -38,7 +23,9 @@ type volituskood string
 
 // Andmed identsustõendi moodustamiseks ja väljastamiseks.
 // Identsustõend koostatakse vahetult enne väljastamist.
-type dataForTokenType struct {
+type forTokenType struct {
+	clientID string // autentimispäringust saadud client_id väärtus,
+	// tagastatakse identsustõendis, väites (claim) aud (audience)
 	sub        string // subject, isikutõendi väli "sub"
 	familyName string // family_name
 	givenName  string // given_name
@@ -47,11 +34,17 @@ type dataForTokenType struct {
 }
 
 // Identsustõendite hoidla
-var idToendid = make(map[volituskood]dataForTokenType)
+var idToendid = make(map[volituskood]forTokenType)
 
 var mutex = &sync.Mutex{}
 
 func main() {
+
+	// Loe seadistus sisse
+	conf = loadConf("config.json")
+
+	// Loe identiteedid sisse
+	identities = loadIdentities("identities.json")
 
 	// Marsruudid
 	// Go-s "/" käsitleb ka need teed, millele oma käsitlejat ei leidu.
@@ -71,11 +64,11 @@ func main() {
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
 	// Käivita HTTPS server
-	fmt.Printf("** TARA-Mock käivitatud pordil %v **\n", httpServerPort)
+	fmt.Printf("** TARA-Mock käivitatud pordil %v **\n", conf.HTTPServerPort)
 	err := http.ListenAndServeTLS(
-		httpServerPort,
-		taraMockCert,
-		taraMockKey,
+		conf.HTTPServerPort,
+		conf.TaraMockCert,
+		conf.TaraMockKey,
 		nil)
 	if err != nil {
 		log.Fatal(err)
@@ -87,7 +80,7 @@ func main() {
 // Kasutab teeki dgrijalva/jwt-go.
 func readRSAKeys() {
 	// Vt: https://github.com/dgrijalva/jwt-go/blob/master/http_example_test.go
-	signBytes, err := ioutil.ReadFile(idTokenPrivKeyPath)
+	signBytes, err := ioutil.ReadFile(conf.IDTokenPrivKeyPath)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -97,7 +90,7 @@ func readRSAKeys() {
 		log.Fatal(err)
 	}
 
-	verifyBytes, err := ioutil.ReadFile(idTokenPubKeyPath)
+	verifyBytes, err := ioutil.ReadFile(conf.IDTokenPubKeyPath)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"time"
 
 	// Identsustõendi verifitseerimiseks
 	// Dok-n: https://godoc.org/github.com/dgrijalva/jwt-go
@@ -28,10 +29,10 @@ type MyCustomClaims struct {
 		GivenName   string `json:"given_name"`
 		FamilyName  string `json:"family_name"`
 	} `json:"profile_attributes"`
-	Amr   string `json:"amr"` // Autentimismeetod
-	State string `json:"state"`
-	Nonce string `json:"nonce"`
-	Acr   string `json:"acr"` // Autentimistase
+	Amr   []string `json:"amr"` // Autentimismeetod
+	State string   `json:"state"`
+	Nonce string   `json:"nonce"`
+	Acr   string   `json:"acr"` // Autentimistase
 	// Vt: https://godoc.org/github.com/dgrijalva/jwt-go#StandardClaims
 	jwt.StandardClaims
 }
@@ -140,19 +141,15 @@ func getIdentityToken(vk string) (string, bool) {
 
 	// ----------------
 	// Päri identsustõend
-	// Koosta POST päringu keha
-	requestBody, err := json.Marshal(map[string]string{
-		"grant_type":   "authorization_code",
-		"code":         vk,
-		"redirect_uri": redirectURI,
-	})
-	if err != nil {
-		log.Fatalln(err)
-	}
+	// Koosta POST päringu query-osa ja keha
+	qp := "?grant_type=authorization_code" +
+		"&code=" + vk +
+		"&redirect_uri" + redirectURI
+	var requestBody []byte
 
 	// Saada POST päring
 	resp, err := client.Post(
-		taraMockTokenEndpoint,
+		taraMockTokenEndpoint+qp,
 		"application/json",
 		bytes.NewBuffer(requestBody),
 	)
@@ -224,9 +221,9 @@ func getIdentityToken(vk string) (string, bool) {
 	fmt.Printf("  id (jti): %v\n", claims.StandardClaims.Id)
 	fmt.Printf("  väljaandja (iss): %v\n", claims.StandardClaims.Issuer)
 	fmt.Printf("  (aud): %v\n", claims.StandardClaims.Audience)
-	fmt.Printf("  kehtib kuni (exp): %v\n", claims.StandardClaims.ExpiresAt)
-	fmt.Printf("  väljaandmiskp (iat): %v\n", claims.StandardClaims.IssuedAt)
-	fmt.Printf("  mitte enne (nbf): %v\n", claims.StandardClaims.NotBefore)
+	fmt.Printf("  kehtib kuni (exp): %v\n", time.Unix((claims.StandardClaims.ExpiresAt), 0))
+	fmt.Printf("  väljaandmiskp (iat): %v\n", time.Unix((claims.StandardClaims.IssuedAt), 0))
+	fmt.Printf("  mitte enne (nbf): %v\n", time.Unix((claims.StandardClaims.NotBefore), 0))
 	fmt.Printf("  subjekt (sub): %v\n", claims.StandardClaims.Subject)
 	fmt.Println("    -- isiku profiil --")
 	fmt.Printf("  eesnimi %v\n", claims.ProfileAttributes.GivenName)

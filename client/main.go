@@ -38,6 +38,7 @@ func main() {
 	http.HandleFunc("/health", healthCheck)
 	http.HandleFunc("/", landingPage)
 	http.HandleFunc("/login", loginUser)
+	http.HandleFunc("/autologin", autologinUser)
 	http.HandleFunc("/return", finalize)
 
 	// fileServer serveerib kasutajaliidese muutumatuid faile.
@@ -78,7 +79,7 @@ func landingPage(w http.ResponseWriter, r *http.Request) {
 	t.Execute(w, mp)
 }
 
-// LoginUser suunab kasutaja TARA-Mock-i autentima.
+// loginUser suunab kasutaja TARA-Mock-i autentima.
 func loginUser(w http.ResponseWriter, r *http.Request) {
 	// Ümbersuunamis-URL
 	ru := taraMockAuthorizeEndpoint + "?" +
@@ -89,6 +90,27 @@ func loginUser(w http.ResponseWriter, r *http.Request) {
 		"nonce=2222&" +
 		"response_type=code&" +
 		"client_id=1"
+
+	fmt.Println("loginUser: Saadan autentimispäringu: ", ru)
+
+	// Suuna kasutaja TARA-Mock-i.
+	http.Redirect(w, r, ru, 301)
+}
+
+// autologinUser suunab kasutaja TARA-Mock-i automaatautentimisele.
+// F-n erib loginUser-st ainult parameetri autologin=<isikukood>
+// poolest. TO DO: Kaalu refaktoorimist.
+func autologinUser(w http.ResponseWriter, r *http.Request) {
+	// Ümbersuunamis-URL
+	ru := taraMockAuthorizeEndpoint + "?" +
+		"redirect_uri=" +
+		url.PathEscape(redirectURI) + "&" +
+		"scope=openid&" +
+		"state=1111&" +
+		"nonce=2222&" +
+		"response_type=code&" +
+		"client_id=1&" +
+		"autologin=36107120334"
 
 	fmt.Println("loginUser: Saadan autentimispäringu: ", ru)
 
@@ -107,6 +129,7 @@ func finalize(w http.ResponseWriter, r *http.Request) {
 		State       string
 		Nonce       string
 		Isikuandmed string
+		Success     bool
 	}
 	var ps PassParams
 
@@ -120,10 +143,12 @@ func finalize(w http.ResponseWriter, r *http.Request) {
 	// t []byte - Identsustõend
 	t, ok := getIdentityToken(getP("code", r))
 	if !ok {
-		log.Fatalln("Identsustõendi pärimine ebaõnnestus")
+		fmt.Println("finalize: Identsustõendi pärimine ebaõnnestus")
+		ps.Success = false
+	} else {
+		fmt.Println("finalize: Saadud identsustõend: ", string(t))
+		ps.Success = true
 	}
-
-	fmt.Println("finalize: Saadud identsustõend: ", string(t))
 
 	ps.Isikuandmed = t
 

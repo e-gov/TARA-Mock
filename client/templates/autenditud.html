@@ -26,9 +26,15 @@
       state = <code>{{ .State }}</code>, 
       nonce = <code>{{ .Nonce }}</code>
     </p>
+    {{if .Success }}
     <div class="success">
       Autenditud!
     </div>
+    {{else}}
+    <div class="adv">
+      Autentimine ebaõnnestus!
+    </div>
+    {{end}}
     <div>{{ .Isikuandmed }}</div>
   </body>
 

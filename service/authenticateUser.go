@@ -11,6 +11,10 @@ import (
 // saadetud kasutaja ja kuvab talle autentimisdialoogi avalehe
 // (dialoogis ongi üks leht). Kasutaja saabub päringuga otspunkti
 // /oidc/authorize.
+// Kui päringus on parameeter autologin=<isikukood>, siis tehakse
+// automaatautentimine. Kui isikukood on ettantud identiteetide
+// hulgas, siis tagastatakse vastav ees- ja perekonnanimi; vastasel
+// korral eesnimi: Auto, perekonnanimi Maat.
 func authenticateUser(w http.ResponseWriter, r *http.Request) {
 	// OidcParams hoiab klientrakendusest saadetud päringu
 	// OpenID Connect kohaseid parameetreid.
@@ -30,6 +34,54 @@ func authenticateUser(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("authenticateUser: Autentimispäringu parameetrid:")
 	for k, v := range r.Form {
 		fmt.Printf("  %s: %s\n", k, v)
+	}
+
+	// Automaatautentimine?
+	if v, ok := r.Form["autologin"]; ok {
+		// Parameeter võib korduda. Võtame esimese.
+		ik := v[0]
+		// Järgnevas on ühisosa sendUserBack-ga. TO DO: Refaktoori
+
+		// Genereeri volituskood
+		var c volituskood
+		c = volituskood(randSeq(6))
+
+		// Kogu identsustõendi koostamiseks ja väljastamiseks vajalikud
+		// andmed.
+		var forToken forTokenType
+
+		forToken.sub = ik
+		forToken.givenName = "Auto"
+		forToken.familyName = "Maat"
+		// Kas autologin parameetris näidatud isik on etteantute hulgas?
+
+		for _, identity := range identities {
+			if identity.Isikukood == ik {
+				forToken.givenName = identity.Eesnimi
+				forToken.familyName = identity.Perekonnanimi
+				break
+			}
+		}
+
+		forToken.clientID = getPtr("client_id", r)
+		forToken.state = getPtr("state", r)
+		forToken.nonce = getPtr("nonce", r)
+
+		// ..ja pane tallele
+		mutex.Lock()
+		idToendid[c] = forToken
+		mutex.Unlock()
+
+		fmt.Println("sendUserBack: Id-tõendi andmed talletatud: ", forToken)
+
+		// Moodusta tagasisuunamis-URL
+		ru := getPtr("redirect_uri", r) +
+			"?code=" + string(c) +
+			"&state=" + getPtr("state", r) +
+			"&nonce=" + getPtr("nonce", r)
+
+		// Suuna kasutaja tagasi
+		http.Redirect(w, r, ru, 301)
 	}
 
 	// pr hoiab päringuparameetreid; kasutatakse malli täitmiseks.

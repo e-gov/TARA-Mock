@@ -3,9 +3,9 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
+	"net/url"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -25,10 +25,10 @@ type Claims struct {
 		GivenName   string `json:"given_name"`
 		FamilyName  string `json:"family_name"`
 	} `json:"profile_attributes"`
-	Amr   string `json:"amr"` // Autentimismeetod
-	State string `json:"state"`
-	Nonce string `json:"nonce"`
-	Acr   string `json:"acr"` // Autentimistase
+	Amr   []string `json:"amr"` // Autentimismeetod
+	State string   `json:"state"`
+	Nonce string   `json:"nonce"`
+	Acr   string   `json:"acr"` // Autentimistase
 }
 
 // Valid kontrollib identsustõendi õigsust.
@@ -43,25 +43,8 @@ func sendIdentityToken(w http.ResponseWriter, r *http.Request) {
 	// vastavad identsustõendi andmed, koosta identsustõend ja saada
 	// päringu vastuses.
 
-	// Loe päringu keha (b).
-	b, err := ioutil.ReadAll(r.Body)
-	defer r.Body.Close()
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	// IDTokenReqBody on vastuvõetava identsustõendi päringu keha
-	// struktuur.
-	type idTokenReqBody struct {
-		GrantType  string      `json:"grant_type"`
-		Code       volituskood `json:"code"`
-		RequestURI string      `json:"request_uri"`
-	}
-
-	// Paki päringu keha lahti (b -> msg).
-	var msg idTokenReqBody
-	err = json.Unmarshal(b, &msg)
+	// Võta päringu Query-osa (-> m)
+	m, err := url.ParseQuery(r.URL.String())
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -69,7 +52,7 @@ func sendIdentityToken(w http.ResponseWriter, r *http.Request) {
 
 	// Võta identsustõendile vajalikud andmed (v) mälus hoitavast
 	// identsustõendite andmete hoidlast.
-	v, ok := idToendid[msg.Code]
+	v, ok := idToendid[volituskood(m.Get("code"))]
 	if !ok {
 		http.Error(w, "Identsustõendile vajalikke andmeid ei leia", 404)
 		return
@@ -78,14 +61,14 @@ func sendIdentityToken(w http.ResponseWriter, r *http.Request) {
 	// Koosta JWT väited
 	claims := &Claims{
 		Jti:      "001",
-		Issuer:   "TARA-Mock",
-		Audience: "Klientrakendus",
+		Issuer:   conf.TaraMockHost + conf.HTTPServerPort,
+		Audience: v.clientID,
 		// Identsustõendi kehtivusaeg - 1 minute
 		ExpiresAt: time.Now().Add(1 * time.Minute).Unix(),
 		IssuedAt:  time.Now().Unix(),
 		NotBefore: time.Now().Unix(),
 		Subject:   v.sub,
-		Amr:       "mID",
+		Amr:       []string{"mID"},
 		State:     v.state,
 		Nonce:     v.nonce,
 		Acr:       "high", // Tagatistase 'kõrge' )
@@ -108,7 +91,7 @@ func sendIdentityToken(w http.ResponseWriter, r *http.Request) {
 	// Oluline näide:
 	// https://gist.github.com/cryptix/45c33ecf0ae54828e63b
 	token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
-	token.Header["kid"] = "taramock"
+	token.Header["kid"] = conf.Kid
 	// Create the JWT string
 	tokenString, err := token.SignedString(signKey)
 	if err != nil {

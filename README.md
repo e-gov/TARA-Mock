@@ -1,10 +1,11 @@
 # TARA-Mock
 
-TARA-Mock on rakendus, mis teeb TARA autentimist suvaliste testkasutajatega. 
+TARA-Mock on rakendus, mis teeb TARA autentimise ükskõik millise testkasutajaga. 
 
 [Ülevaade](#ülevaade) · 
 [Kasutusstsenaarium](#kasutusstsenaarium) · 
 [Lihtsustused](#lihtsustused) · 
+[Kasutamine](#kasutamine) · 
 [Paigaldamine](#paigaldamine) · 
 [Klientrakenduse näidis](#klientrakenduse-näidis) · 
 [Turvalisus](docs/Turvalisus.md)
@@ -16,6 +17,8 @@ TARA-Mock on mõeldud kasutamiseks siis, kui [TARA testteenuse](https://e-gov.gi
 TARA testteenusega saab autentida ainult väga väikese hulga TARA poolt ette antud testkasutajatega.
 
 TARA-Mock seevastu võimaldab kasutajal valida autentimise dialoogis identiteet TARA-Mock seadistuses etteantud identiteetide hulgast või sisestada ise isikukood, ees- ja perekonnanimi, mille all soovitakse sisse logida. Sisuliselt saab sisse logida ükskõik millise identiteediga.
+
+TARA-Mock-i abil saab autentimise ka täiesti automeerida: kasutaja autenditakse etteantud identiteediga, autentimise dialoogi vahele jättes. See võimalus on kasulik automaattestimisel.
 
 TARA-Mock on reaalse TARA-ga ühilduv, s.t TARA-Mock ja TARA on üksteisega vahetatavad lihtsa seadistamisega.
 
@@ -70,7 +73,7 @@ Mida siis kontrollitakse?
 - vormikohaselt täidetakse kogu TARA kasutusvoog (v.a UserInfo otspunkt)
 - identsustõend allkirjastatakse, allkirja kontrollimise võti on võtmeotspunktis
 
-## Paigaldamine
+## Kasutamine
 
 TARA-Mock pakub otspunkte:
 
@@ -83,6 +86,10 @@ TARA-Mock pakub otspunkte:
 
 Nt TARA-Mock kasutamisel oma masinas: `https://localhost:8080/health`.
 
+Otspunktide poole pöördumine on samasugune TARA (või test-TARA) poole pöördumisega, ühe täiendusega: automaatautentimist soovides tuleb autentimisele suunamise päringus (`/oidc/authorize`) lisada query-parameeter `autologin=<isikukood>`. TARA-Mock kontrollib, kas isikukoodiga isik on etteantud identiteetide hulgas; kui ei ole, siis väljastab identsutõendi isikule `Auto Maat`.
+
+## Paigaldamine
+
 1 Masinas peab olema paigaldatud Go, versioon 1.11 või hilisem.
 
 2 Klooni repo [https://github.com/e-gov/TARA-Mock](https://github.com/e-gov/TARA-Mock) masinasse.
@@ -91,13 +98,15 @@ Nt TARA-Mock kasutamisel oma masinas: `https://localhost:8080/health`.
 
 TARA-Mock-is määrab kasutaja ise identiteedi (isikukoodi, ees- ja perekonnanime), millega ta autenditakse. Selleks ta kas valib etteantud identiteetide hulgast või sisestab ise identiteeti.
 
-Tarkvaraga on kaasas 3 etteantud identiteeti. Etteantud identiteetide muutmiseks redigeeri faili `service/data.go`:
+Tarkvaraga on kaasas 3 etteantud identiteeti. Etteantud identiteetide muutmiseks redigeeri faili `service/identities.json`:
 
-```
-...
-		Identity{"Isikukood1", "Eesnimi1", "Perekonnanimi1"},
-		Identity{"Isikukood2", "Eesnimi2", "Perekonnanimi2"},
-		Identity{"Isikukood3", "Eesnimi3", "Perekonnanimi3"},
+```json
+[
+  {
+    "isikukood": "Isikukood1",
+    "eesnimi": "Eesnimi1",
+    "perekonnanimi": "Perekonnanimi1"
+  },
 ...
 ```
 Muudatusi saab teha ka hiljem. Siis tuleb TARA-Mock-i uuesti käivitada.
@@ -106,13 +115,18 @@ Muudatusi saab teha ka hiljem. Siis tuleb TARA-Mock-i uuesti käivitada.
 
 - TARA-Mock töötab arendaja masinas (`localhost`), pordil `8080`.
 
-Muuda failis `service/main.go` olev vaikeseadistus oma konfiguratsioonile vastavaks:
+Muuda failis `service/config.json` olev vaikeseadistus oma konfiguratsioonile vastavaks:
 
-```
-const (
-	taraMockHost       = "localhost"
-	httpServerPort     = ":8080"
-...
+```json
+{
+	"taraMockHost": "localhost",
+	"httpServerPort": ":8080",
+	"taraMockCert": "vault/https.crt",
+	"taraMockKey": "vault/https.key",
+	"idTokenPrivKeyPath": "vault/idtoken.key",
+	"idTokenPubKeyPath": "vault/idtoken.pub",
+	"kid": "taramock"
+}
 ```
 
 5 Valmista ja paigalda võtmed ja serdid, vt [Turvalisus](docs/Turvalisus.md)
@@ -139,6 +153,7 @@ TARA-Mock-ga kaasasolev klientrakenduse näidis pakub otspunkte:
 - `/health` - elutukse
 - `/` - avaleht; kasutaja saab sealt minna TARA-Mock-i autentima
 - `/login` - kasutaja suunamine TARA-Mock-i autentima
+- `/autologin` - kasutaja suunamine TARA-Mock-i autentima
 - `/return` - autentimiselt tagasi suunatud kasutaja vastuvõtmine, identsustõendi pärimine TARA-Mock-st ja sisselogimise lõpuleviimine 
 
 Klientrakenduse kasutamiseks:
@@ -162,4 +177,3 @@ go run .
 ```
 
 6 Ava sirvikus klientrakenduse avaleht (vaikimisi `https://localhost:8081`)
- 

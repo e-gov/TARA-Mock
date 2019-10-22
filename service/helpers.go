@@ -71,7 +71,7 @@ func sendConf(w http.ResponseWriter, r *http.Request) {
 	}
 
 	conf := Conf{
-		Issuer:                           "https://" + taraMockHost,
+		Issuer:                           "https://" + conf.TaraMockHost,
 		ScopesSupported:                  []string{"openid", "idcard", "mid", "banklink", "smartid", "eidas", "eidasonly", "email"},
 		ResponseTypesSupported:           []string{"code"},
 		SubjectTypesSupported:            []string{"public", "pairwise"},
@@ -80,14 +80,13 @@ func sendConf(w http.ResponseWriter, r *http.Request) {
 		GrantTypesSupported:              []string{"authorization_code"},
 		IDTokenSigningAlgValuesSupported: []string{"RS256"},
 		UILocalesSupported:               []string{"et", "en", "ru"},
-		TokenEndpoint:                    "https://" + taraMockHost + httpServerPort + "/oidc/token",
-		UserinfoEndpoint:                 "https://" + taraMockHost + httpServerPort + "/oidc/profile",
-		AuthorizationEndpoint:            "https://" + taraMockHost + httpServerPort + "/oidc/authorize",
-		JwksURI:                          "https://" + taraMockHost + httpServerPort + "/oidc/jwks",
+		TokenEndpoint:                    "https://" + conf.TaraMockHost + conf.HTTPServerPort + "/oidc/token",
+		UserinfoEndpoint:                 "https://" + conf.TaraMockHost + conf.HTTPServerPort + "/oidc/profile",
+		AuthorizationEndpoint:            "https://" + conf.TaraMockHost + conf.HTTPServerPort + "/oidc/authorize",
+		JwksURI:                          "https://" + conf.TaraMockHost + conf.HTTPServerPort + "/oidc/jwks",
 	}
 
 	json.NewEncoder(w).Encode(conf)
-
 }
 
 // personCodeToDoB tagastab isikukoodi põhjal arvutatud sünnikuupäeva.

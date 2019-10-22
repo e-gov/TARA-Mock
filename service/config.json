@@ -1,0 +1,9 @@
+{
+	"taraMockHost": "localhost",
+	"httpServerPort": ":8080",
+	"taraMockCert": "vault/https.crt",
+	"taraMockKey": "vault/https.key",
+	"idTokenPrivKeyPath": "vault/idtoken.key",
+	"idTokenPubKeyPath": "vault/idtoken.pub",
+	"kid": "taramock"
+}

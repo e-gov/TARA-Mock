@@ -1,0 +1,17 @@
+[
+  {
+    "isikukood": "Isikukood1",
+    "eesnimi": "Eesnimi1",
+    "perekonnanimi": "Perekonnanimi1"
+  },
+  {
+    "isikukood": "Isikukood2",
+    "eesnimi": "Eesnimi2",
+    "perekonnanimi": "Perekonnanimi2"
+  },
+  {
+    "isikukood": "Isikukood3",
+    "eesnimi": "Eesnimi3",
+    "perekonnanimi": "Perekonnanimi3"
+  }
+]

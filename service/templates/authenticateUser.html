@@ -55,6 +55,8 @@
           </div>
 
           <!-- Turvaelemendid, peidetud väljadena -->
+          <input type="hidden" id="client_id" name="client_id"
+            value="{{ .Request.ClientID }}">
           <input type="hidden" id="redirect_uri" name="redirect_uri"
             value="{{ .Request.RedirectURI }}">
           <input type="hidden" id="state" name="state"
@@ -72,6 +74,8 @@
       <div class="paan">
         <form action="/back" method="POST">
           <!-- Turvaelemendid, peidetud väljadena -->
+          <input type="hidden" id="client_id" name="client_id"
+            value="{{ .Request.ClientID }}">
           <input type="hidden" id="redirect_uri" name="redirect_uri"
             value="{{ .Request.RedirectURI }}">
           <input type="hidden" id="state" name="state"
