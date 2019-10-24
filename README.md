@@ -94,7 +94,13 @@ Otspunktide poole pöördumine on samasugune TARA (või test-TARA) poole pöörd
 
 2 Klooni repo [https://github.com/e-gov/TARA-Mock](https://github.com/e-gov/TARA-Mock) masinasse.
 
-3 Kui soovid, muuda etteantud identiteete.
+3 Otsusta, kus hakkad hoidma TARA-Mock-i seadistust ("konfi"), võtmeid ja etteantud identiteete. Vaikimisi on seadistus koodirepos failis `config.json`, võtmed repo kaustas `service/vault` ja etteantud identiteedid repo juurkaustas failis `identities.json`. Koodiuuenduste tõmbamisega kirjutatakse need tehised üle. Seetõttu on parem seadistust hoida koodirepost eraldi. Kanna `config.json` ja `identities.json` eraldi seadistuskausta, nt `TARA-Mock-conf`; moodusta sinna ka võtmed. Seadistuskausta asukoht näita TARA-Mock-i käivitamisel võtmega `-conf`, nt:
+
+```
+go run . -conf ../../TARA-Mock-conf
+```
+
+4 Kui soovid, muuda etteantud identiteete.
 
 TARA-Mock-is määrab kasutaja ise identiteedi (isikukoodi, ees- ja perekonnanime), millega ta autenditakse. Selleks ta kas valib etteantud identiteetide hulgast või sisestab ise identiteeti.
 
@@ -111,7 +117,7 @@ Tarkvaraga on kaasas 3 etteantud identiteeti. Etteantud identiteetide muutmiseks
 ```
 Muudatusi saab teha ka hiljem. Siis tuleb TARA-Mock-i uuesti käivitada.
 
-4 Kontrolli ja vajadusel muuda TARA-Mock-is seadistatud hostinimesid ja porte. Vaikeseadistus on tehtud eeldustel:
+5 Kontrolli ja vajadusel muuda TARA-Mock-is seadistatud hostinimesid ja porte. Vaikeseadistus on tehtud eeldustel:
 
 - TARA-Mock töötab arendaja masinas (`localhost`), pordil `8080`.
 
@@ -129,18 +135,18 @@ Muuda failis `service/config.json` olev vaikeseadistus oma konfiguratsioonile va
 }
 ```
 
-5 Valmista ja paigalda võtmed ja serdid, vt [Turvalisus](docs/Turvalisus.md)
+6 Valmista ja paigalda võtmed ja serdid, vt [Turvalisus](docs/Turvalisus.md)
 
   - sh lisa sirvikusse TARA-Mock-i CA sert.
 
-6 Käivita TARA-Mock:
+7 Käivita TARA-Mock:
 
 ```
 cd service
 go run .
 ```
 
-7 Liidesta klientrakendus TARA-Mock-ga. Selleks tuleb klientrakenduse konfiguratsioonis seada:
+8 Liidesta klientrakendus TARA-Mock-ga. Selleks tuleb klientrakenduse konfiguratsioonis seada:
 
 - TARA-Mock-i hostinimi ja port. Otspunktide nimed on samad, mis TARA-s, neid ei ole vaja muuta.
 - Kui kasutad TARA-Mock-i instantsi, mis ei ole sinu kontrolli all, siis ära kasuta test-TARA klientrakenduse salasõna; sea salasõnaks muu väärtus; TARA-Mock ei kontrolli salasõna.
