@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
@@ -44,7 +45,14 @@ func sendIdentityToken(w http.ResponseWriter, r *http.Request) {
 	// päringu vastuses.
 
 	// Võta päringu Query-osa (-> m)
-	m, err := url.ParseQuery(r.URL.String())
+	b, err := ioutil.ReadAll(r.Body)
+	defer r.Body.Close()
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	m, err := url.ParseQuery(string(b))
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -61,7 +69,7 @@ func sendIdentityToken(w http.ResponseWriter, r *http.Request) {
 	// Koosta JWT väited
 	claims := &Claims{
 		Jti:      "001",
-		Issuer:   conf.TaraMockHost + conf.HTTPServerPort,
+		Issuer:   "https://" + conf.TaraMockHost + conf.HTTPServerPort,
 		Audience: v.clientID,
 		// Identsustõendi kehtivusaeg - 1 minute
 		ExpiresAt: time.Now().Add(1 * time.Minute).Unix(),
