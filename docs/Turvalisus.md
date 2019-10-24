@@ -100,7 +100,8 @@ openssl rsa \
 Sirvikusse, millega TARA-Mock-i kasutatakse, tuleb paigaldada TARA-Mock-i CA sert. Sellega pannakse sirvik TARA-Mock-i usaldama. Usalduseta ei ava sirvik TARA-Mock-i kasutajaliidest.
 
 - kopeeri TARA-Mock-i CA sert sirviku arvutisse (või tee muul viisil kättesaadavaks)
-- Firefox: `Tools`, `Options`, `Privacy & Security`, `Certificates`, `View Certificates`, `Authorities`, `Import`
+  - Chrome: `chrome://settings/privacy`, `Manage Certificates`, `Trusted Root Certification Authorities`
+  - Firefox: `Tools`, `Options`, `Privacy & Security`, `Certificates`, `View Certificates`, `Authorities`, `Import`
 
 Kui kasutate ka TARA-Mock-ga kaasas olevat klientrakendust, siis peab ka selle CA serdi paigaldama sirvikusse. Kui TARA-Mock-i ja klientrakenduse serdid anda välja ühe CA poolt, piisab ühest paigaldamisest. 
 
