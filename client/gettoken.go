@@ -59,15 +59,15 @@ func getIdentityToken(vk string) (string, bool) {
 
 	// Loe kliendi HTTPS võti ja sert
 	cert, err := tls.LoadX509KeyPair(
-		appCert,
-		appKey)
+		conf.AppCert,
+		conf.AppKey)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	// Loe CA sert
 	caCert, err := ioutil.ReadFile(
-		rootCAFile,
+		conf.RootCAFile,
 	)
 	if err != nil {
 		log.Fatal(err)
@@ -90,7 +90,7 @@ func getIdentityToken(vk string) (string, bool) {
 
 	// ----------------
 	// Päri allkirja avalik võti
-	resp1, err := client.Get(taraMockKeyEndpoint)
+	resp1, err := client.Get(conf.TaraMockKeyEndpoint)
 	// resp1, err := client.Get("https://tara-test.ria.ee/oidc/jwks")
 	if err != nil {
 		log.Fatalln("Viga allkirja avaliku võtme pärimisel: ", err)
@@ -144,12 +144,12 @@ func getIdentityToken(vk string) (string, bool) {
 	// Koosta POST päringu query-osa ja keha
 	qp := "?grant_type=authorization_code" +
 		"&code=" + vk +
-		"&redirect_uri" + redirectURI
+		"&redirect_uri" + conf.RedirectURI
 	var requestBody []byte
 
 	// Saada POST päring
 	resp, err := client.Post(
-		taraMockTokenEndpoint+qp,
+		conf.TaraMockTokenEndpoint+qp,
 		"application/json",
 		bytes.NewBuffer(requestBody),
 	)
