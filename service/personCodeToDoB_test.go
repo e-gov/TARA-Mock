@@ -14,7 +14,14 @@ func TestPersonCodeToDoB(t *testing.T) {
 			dob1, err)
 	}
 
-	// Õige
+	// Õige, eesliitega
+	dob2, err := personCodeToDoB("EE36107120334") // Priit Parmakson
+	if err != nil || dob2 != "1961-07-12" {
+		t.Errorf("<36107120334>: ootasin: %v, %v, sain: %v, %v", "1961-07-12", nil,
+			dob2, err)
+	}
+
+	// Õige, eesliiteta
 	dob2, err := personCodeToDoB("36107120334") // Priit Parmakson
 	if err != nil || dob2 != "1961-07-12" {
 		t.Errorf("<36107120334>: ootasin: %v, %v, sain: %v, %v", "1961-07-12", nil,

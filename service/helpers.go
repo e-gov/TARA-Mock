@@ -90,11 +90,20 @@ func sendConf(w http.ResponseWriter, r *http.Request) {
 }
 
 // personCodeToDoB tagastab isikukoodi põhjal arvutatud sünnikuupäeva.
+// Eeldab, et isikukood antakse eesliitega "EE". Kui isikukoodis eesliidet "EE"
+// ei leia, siis üritab sünnikuupäeva arvutada eesliiteta. err-is tagastab
+// veateate või edu korral nil.
 func personCodeToDoB(c string) (dob string, err error) {
 	if len(c) > 6 {
+		// Kas eesliide, milles riigikood?
+		if c[1:3] == "EE" {
+			e := c[3:]
+		} else {
+			e := c
+		}
 		// Leia sajand
 		var s string
-		switch string(c[0]) {
+		switch string(e[0]) {
 		case "1", "2":
 			s = "18"
 		case "3", "4":
@@ -104,7 +113,7 @@ func personCodeToDoB(c string) (dob string, err error) {
 		default:
 			return "", errors.New("Sajand vale")
 		}
-		dob = s + c[1:3] + "-" + c[3:5] + "-" + c[5:7]
+		dob = s + e[1:3] + "-" + e[3:5] + "-" + e[5:7]
 		dobc := dob + "T15:04:05+00:00"
 		// Kontrolli, kas legaalne kp
 		// RFC3339 - "2012-11-01T22:08:41+00:00"
