@@ -1,6 +1,6 @@
 module github.com/e-gov/TARA-Mock/service
 
-go 1.13
+go 1.12
 
 require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible

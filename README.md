@@ -90,7 +90,7 @@ Otspunktide poole pöördumine on samasugune TARA (või test-TARA) poole pöörd
 
 ## Paigaldamine
 
-1 Masinas peab olema paigaldatud Go, versioon 1.11 või hilisem.
+1 Masinas peab olema paigaldatud Go, versioon 1.12 või hilisem.
 
 2 Klooni repo [https://github.com/e-gov/TARA-Mock](https://github.com/e-gov/TARA-Mock) masinasse.
 
@@ -158,7 +158,7 @@ TARA-Mock-ga kaasasolev klientrakenduse näidis pakub otspunkte:
 
 Klientrakenduse kasutamiseks:
 
-1 Masinas peab olema paigaldatud Go, versioon 1.11 või hilisem.
+1 Masinas peab olema paigaldatud Go, versioon 1.12 või hilisem.
 
 2 Klooni repo [https://github.com/e-gov/TARA-Mock](https://github.com/e-gov/TARA-Mock) masinasse.
 
