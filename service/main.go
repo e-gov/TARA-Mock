@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/rsa"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -40,11 +41,14 @@ var mutex = &sync.Mutex{}
 
 func main() {
 
+	cFilePtr := flag.String("conf", "config.json", "Seadistusfaili asukoht")
+	flag.Parse()
+
 	// Loe seadistus sisse
-	conf = loadConf("config.json")
+	conf = loadConf(*cFilePtr)
 
 	// Loe identiteedid sisse
-	identities = loadIdentities("identities.json")
+	identities = loadIdentities(conf.IdentitiesFile)
 
 	// Marsruudid
 	// Go-s "/" käsitleb ka need teed, millele oma käsitlejat ei leidu.

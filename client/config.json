@@ -1,0 +1,11 @@
+{
+	"appHost": "localhost",
+	"appPort": ":8081",
+	"appCert": "vault/https.crt",
+	"appKey": "vault/https.key",
+	"rootCAFile": "vault/rootCA.pem",
+	"taraMockAuthorizeEndpoint": "https://localhost:8080/oidc/authorize",
+	"taraMockTokenEndpoint": "https://localhost:8080/oidc/token",
+	"taraMockKeyEndpoint": "https://localhost:8080/oidc/jwks",
+	"redirectURI": "https://localhost:8081/return"
+}	

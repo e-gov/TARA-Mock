@@ -52,11 +52,16 @@ func sendIdentityToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	fmt.Println("sendIdentityToken: Saadud päringu keha:")
+	fmt.Println(string(b))
 	m, err := url.ParseQuery(string(b))
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
+	for k, v := range m { 
+    fmt.Printf("key[%s] value[%s]\n", k, v)
+}
 
 	// Võta identsustõendile vajalikud andmed (v) mälus hoitavast
 	// identsustõendite andmete hoidlast.

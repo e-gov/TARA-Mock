@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"html/template"
 	"io"
@@ -10,29 +11,13 @@ import (
 	"path/filepath"
 )
 
-const (
-	// klientrakenduse hostinimi
-	appHost = "localhost"
-	// klientrakenduse HTTPS serveri port
-	appPort = ":8081"
-	// klientrakenduse HTTPS sert.
-	appCert = "vault/https.crt"
-	// klientrakenduse HTTPS privaatvõti.
-	appKey = "vault/https.key"
-
-	// Usaldusankur TARA-Mock-i poole pöördumisel
-	rootCAFile = "vault/rootCA.pem"
-
-	// TARA-Mock-i otspunktid
-	taraMockAuthorizeEndpoint = "https://localhost:8080/oidc/authorize"
-	taraMockTokenEndpoint     = "https://localhost:8080/oidc/token"
-	taraMockKeyEndpoint       = "https://localhost:8080/oidc/jwks"
-
-	// OpenID Connect kohane tagasisuunamis-URL
-	redirectURI = "https://localhost:8081/return"
-)
-
 func main() {
+
+	cFilePtr := flag.String("conf", "config.json", "Seadistusfaili asukoht")
+	flag.Parse()
+
+	// Loe seadistus sisse
+	conf = loadConf(*cFilePtr)
 
 	// Marsruudid
 	http.HandleFunc("/health", healthCheck)
@@ -48,9 +33,9 @@ func main() {
 	// Käivita HTTPS server
 	log.Println("** Klientrakenduse näidis käivitatud pordil 8081 **")
 	err := http.ListenAndServeTLS(
-		appPort,
-		appCert,
-		appKey,
+		conf.AppPort,
+		conf.AppCert,
+		conf.AppKey,
 		nil)
 	if err != nil {
 		log.Fatal(err)
@@ -67,7 +52,7 @@ func landingPage(w http.ResponseWriter, r *http.Request) {
 		appPort     string
 		RedirectURI string
 	}
-	mp := MalliParameetrid{appHost, appPort, redirectURI}
+	mp := MalliParameetrid{conf.AppHost, conf.AppPort, conf.RedirectURI}
 
 	// Loe avalehe mall, täida ja saada sirvikusse.
 	p := filepath.Join("templates", "index.html")
@@ -82,9 +67,9 @@ func landingPage(w http.ResponseWriter, r *http.Request) {
 // loginUser suunab kasutaja TARA-Mock-i autentima.
 func loginUser(w http.ResponseWriter, r *http.Request) {
 	// Ümbersuunamis-URL
-	ru := taraMockAuthorizeEndpoint + "?" +
+	ru := conf.TaraMockAuthorizeEndpoint + "?" +
 		"redirect_uri=" +
-		url.PathEscape(redirectURI) + "&" +
+		url.PathEscape(conf.RedirectURI) + "&" +
 		"scope=openid&" +
 		"state=1111&" +
 		"nonce=2222&" +
@@ -102,9 +87,9 @@ func loginUser(w http.ResponseWriter, r *http.Request) {
 // poolest. TO DO: Kaalu refaktoorimist.
 func autologinUser(w http.ResponseWriter, r *http.Request) {
 	// Ümbersuunamis-URL
-	ru := taraMockAuthorizeEndpoint + "?" +
+	ru := conf.TaraMockAuthorizeEndpoint + "?" +
 		"redirect_uri=" +
-		url.PathEscape(redirectURI) + "&" +
+		url.PathEscape(conf.RedirectURI) + "&" +
 		"scope=openid&" +
 		"state=1111&" +
 		"nonce=2222&" +

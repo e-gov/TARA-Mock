@@ -94,12 +94,17 @@ func sendConf(w http.ResponseWriter, r *http.Request) {
 // ei leia, siis üritab sünnikuupäeva arvutada eesliiteta. err-is tagastab
 // veateate või edu korral nil.
 func personCodeToDoB(c string) (dob string, err error) {
+	r := []rune(c)
+	fmt.Println("First 2", string(r[0:2]))
 	if len(c) > 6 {
 		// Kas eesliide, milles riigikood?
-		if c[1:3] == "EE" {
-			e := c[3:]
+		var e []rune
+		if string(r[0:2]) == "EE" {
+			e = r[2:]
+			fmt.Println("eesliitega")
 		} else {
-			e := c
+			e = r
+			fmt.Println("eesliiteta")
 		}
 		// Leia sajand
 		var s string
@@ -113,7 +118,7 @@ func personCodeToDoB(c string) (dob string, err error) {
 		default:
 			return "", errors.New("Sajand vale")
 		}
-		dob = s + e[1:3] + "-" + e[3:5] + "-" + e[5:7]
+		dob = s + string(e[1:3]) + "-" + string(e[3:5]) + "-" + string(e[5:7])
 		dobc := dob + "T15:04:05+00:00"
 		// Kontrolli, kas legaalne kp
 		// RFC3339 - "2012-11-01T22:08:41+00:00"

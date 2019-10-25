@@ -20,6 +20,8 @@ type Config struct {
 	IDTokenPubKeyPath string `json:"idTokenPubKeyPath"`
 	// Identsustõendi allkirjavõtme identifikaator
 	Kid string `json:"kid"`
+	// Ettevalmistatud identiteetide fail
+	IdentitiesFile string `json:"identitiesFile"`
 }
 
 // TARA-Mock sisseloetud seadistus.
@@ -38,8 +40,10 @@ func loadConf(f string) Config {
 	jsonParser := json.NewDecoder(configFile)
 	err = jsonParser.Decode(&config)
 	if err != nil {
-		fmt.Println("TARA-Mock: Seadistuse dekodeerimine ebaõnnestus.")
+		fmt.Printf("TARA-Mock: Seadistuse dekodeerimine ebaõnnestus: %s\n", err)
 		os.Exit(1)
 	}
+	// Kuva konf-n
+	fmt.Printf("Seadistus laetud: %v\n", conf)
 	return config
 }

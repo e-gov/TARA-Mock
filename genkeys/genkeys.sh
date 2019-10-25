@@ -5,8 +5,8 @@ echo "Skript moodustab TARA-Mock tööks vajalikud võtmed ja serdid."
 echo "Vt: https://github.com/e-gov/TARA-Mock/blob/master/docs/Turvalisus.md"
 
 echo "--------------------------"
-echo "### NB! subj väärtustes Kasutusel Git for Windows tee-eraldajad."
-echo "Linux-is asenda: // -> / ja \ -> /"
+echo "### NB! subj väärtustes tuleb Git for Windows kasutamisel seada"
+echo "tee-eraldajad: //CN\ ..."
 
 echo
 echo "### 1 Valmistan CA võtme ja serdi"
@@ -18,7 +18,7 @@ openssl req \
   -out rootCA.pem \
   -nodes \
   -days 1024 \
-  -subj "//C=EE\ST=\L=\O=Arendaja\CN=Arendaja"
+  -subj "/C=EE/ST=/L=/O=Arendaja/CN=Arendaja"
 
 # Kuva subject ja issuer
 echo "###   Valmistatud CA sert:"
@@ -37,7 +37,7 @@ openssl req \
   -out https.crs \
   -newkey rsa:2048 \
   -keyout https.key \
-  -subj "//C=EE\ST=\L=\O=Arendaja\CN=Arendaja"
+  -subj "/C=EE/ST=/L=/O=Arendaja/CN=Arendaja"
 # Sert
 openssl x509 \
   -req \
