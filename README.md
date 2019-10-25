@@ -115,7 +115,10 @@ Tarkvaraga on kaasas 3 etteantud identiteeti. Etteantud identiteetide muutmiseks
   },
 ...
 ```
-Muudatusi saab teha ka hiljem. Siis tuleb TARA-Mock-i uuesti käivitada.
+
+TARA väljastab identsustõendis, väiteks `sub` isikukoodi koos eesliitega, milles on riigikood, nt `EE`. Kui soovid samamoodi, siis lisa ise isikukoodi ette `EE`.
+ 
+Muudatusi saab teha ka hiljem. Siis tuleb TARA-Mock uuesti käivitada.
 
 5 Kontrolli ja vajadusel muuda TARA-Mock-is seadistatud hostinimesid ja porte. Vaikeseadistus on tehtud eeldustel:
 
