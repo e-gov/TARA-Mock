@@ -1,6 +1,6 @@
 # TARA-Mock
 
-TARA-Mock on rakendus, mis teeb TARA autentimise ükskõik millise testkasutajaga. 
+TARA-Mock on rakendus, mis teeb TARA autentimise ükskõik millise testkasutajaga, kui vaja siis ka inimese sekkumiseta. 
 
 [Ülevaade](#ülevaade) · 
 [Kasutusstsenaarium](#kasutusstsenaarium) · 
@@ -61,6 +61,7 @@ TARA-Mock on tehtud rida lihtsustusi ja jäetud ära kontrolle:
 - identsustõendite hoidlat ei puhastata aegunud tõenditest
 - ei kontrollita, et identsustõend väljastatakse ainult üks kord
 - isikukoodi vastavust Eesti isikukoodi standardile ei kontrollita; kui `date_of_birth` väärtust ei saa isikukoodist moodustada, siis tagastatakse väärtus `1961-07-12`
+- ei lisa identsustõendi väites `sub` väljastatavale isikukoodile riigikoodi (eesliitena). TARA lisab alati riigikoodi, nt `EE`. Kui rakenduses soovitakse riigikoodi kasutada, siis peavad riigikoodid olema juba etteantud identiteetides, isikukoodi sisestamisel kasutaja poolt aga peab kasutaja ise lisama riigikoodi.
 - ei kontrollita, kas isik on elus või üldse olemas
 - ei kontrollita sisestatud nimede vastavust keelenormile
 - autentimismeetodina näidatakse alati `mID`
@@ -94,7 +95,9 @@ Otspunktide poole pöördumine on samasugune TARA (või test-TARA) poole pöörd
 
 2 Klooni repo [https://github.com/e-gov/TARA-Mock](https://github.com/e-gov/TARA-Mock) masinasse.
 
-3 Otsusta, kus hakkad hoidma TARA-Mock-i seadistust ("konfi"), võtmeid ja etteantud identiteete. Vaikimisi on seadistus koodirepos failis `config.json`, võtmed repo kaustas `service/vault` ja etteantud identiteedid repo juurkaustas failis `identities.json`. Koodiuuenduste tõmbamisega kirjutatakse need tehised üle. Seetõttu on parem seadistust hoida koodirepost eraldi. Kanna `config.json` ja `identities.json` eraldi seadistuskausta, nt `TARA-Mock-conf`; moodusta sinna ka võtmed. Seadistuskausta asukoht näita TARA-Mock-i käivitamisel võtmega `-conf`, nt:
+3 Otsusta, kus hakkad hoidma TARA-Mock-i seadistust ("konfi"), võtmeid ja etteantud identiteete. Vaikimisi on seadistus koodirepos failis `config.json`, võtmed repo kaustas `service/vault` ja etteantud identiteedid repo juurkaustas failis `identities.json`. Koodiuuenduste tõmbamisega kirjutatakse need tehised üle. Seetõttu on parem seadistust hoida koodirepost eraldi. Kanna `config.json` ja `identities.json` eraldi seadistuskausta, nt `TARA-Mock-conf`; moodusta sinna ka võtmed. Etteantud identiteetide fail `identities.json` ei peab asuma seadistuskaustas; asukohta saab seadistusfailis määrata.
+
+Seadistusfaili asukoht näita TARA-Mock-i käivitamisel võtmega `-conf`, nt:
 
 ```
 go run . -conf ../../TARA-Mock-conf/config.json
@@ -147,7 +150,7 @@ Muuda failis `service/config.json` olev vaikeseadistus oma konfiguratsioonile va
 
 ```
 cd service
-go run .
+go run -conf <seadistusfail>
 ```
 
 8 Liidesta klientrakendus TARA-Mock-ga. Selleks tuleb klientrakenduse konfiguratsioonis seada:
@@ -177,12 +180,14 @@ Klientrakenduse kasutamiseks:
 - TARA-Mock-i hostinimi on `localhost` ja port on `8080`
 - klientrakenduse hostinimi on `localhost` ja port on `8081`
 
+Seadistamine on analoogiline TARA-Mock-i seadistamisega.
+
 4 Valmista ja paigalda võtmed ja serdid, vt lähemalt [Turvalisus](docs/Turvalisus.md)
 
 5 Käivita klientrakendus:
 
 ```
-cd client
+cd client -conf <seadistusfail>
 go run .
 ```
 
