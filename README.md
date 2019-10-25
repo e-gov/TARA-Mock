@@ -1,6 +1,6 @@
 # TARA-Mock
 
-TARA-Mock on rakendus, mis teeb TARA autentimise suvalise testkasutajaga, kui vaja, siis ka inimese sekkumiseta. 
+TARA-Mock on teenus, mis teeb TARA autentimise suvalise testkasutajaga, kui vaja, siis ka inimese sekkumiseta. 
 
 [Ülevaade](#ülevaade) · 
 [Kasutusstsenaarium](#kasutusstsenaarium) · 
