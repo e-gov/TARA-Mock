@@ -35,9 +35,9 @@ func loadIdentities(f string) []Identity {
 		fmt.Println("TARA-Mock: Ettevalmistatud identiteetide  dekodeerimine ebaõnnestus.")
 		os.Exit(1)
 	}
-	fmt.Println("Loetud identiteedid:")
+	fmt.Printf("loadIdentities:\n    Loetud identiteedid:\n")
 	for _, id := range d {
-		fmt.Printf("  %s, %s, %s\n", id.Isikukood, id.Eesnimi, id.Perekonnanimi)
+		fmt.Printf("    %s, %s, %s\n", id.Isikukood, id.Eesnimi, id.Perekonnanimi)
 	}
 	return d
 }

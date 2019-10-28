@@ -25,7 +25,7 @@ func sendUserBack(w http.ResponseWriter, r *http.Request) {
 	// Genereeri volituskood
 	var c volituskood
 	c = volituskood(randSeq(6))
-	fmt.Printf("sendUserBack: Genereeritud volituskood: %v\n", c)
+	fmt.Printf("sendUserBack:\n    Genereeritud volituskood: %v\n", c)
 
 	// Kogu identsustõendi koostamiseks ja väljastamiseks vajalikud
 	// andmed.
@@ -34,13 +34,13 @@ func sendUserBack(w http.ResponseWriter, r *http.Request) {
 	// Selgita, millise identiteedi kasutaja valis. Kui valis etteantute
 	// hulgast, siis Form submit saatis elemendi isik=<nr> (0-based).
 	isikunr := getPtr("isik", r)
-  fmt.Printf("sendUserBack: Kasutaja valis isiku: %v\n", isikunr)
+	fmt.Printf("    Kasutaja valis isiku: %v\n", isikunr)
 
 	if isikunr != "" {
 		// Teisenda int-ks
 		i, err := strconv.Atoi(isikunr)
 		if err != nil {
-			fmt.Println("sendUserBack: Viga vormist saadud andmete kasutamisel")
+			fmt.Println("    Viga vormist saadud andmete kasutamisel")
 			i = 0 // Kasuta esimest etteantud identiteeti
 		}
 		forToken.sub = identities[i].Isikukood
@@ -63,13 +63,15 @@ func sendUserBack(w http.ResponseWriter, r *http.Request) {
 	idToendid[c] = forToken
 	mutex.Unlock()
 
-	fmt.Println("sendUserBack: Id-tõendi andmed talletatud: ", forToken)
+	fmt.Printf("--- Id-tõendi andmed talletatud:\n    %+v\n", forToken)
 
 	// Moodusta tagasisuunamis-URL
 	ru := returnURI +
 		"?code=" + string(c) +
 		"&state=" + state +
 		"&nonce=" + nonce
+
+	fmt.Printf("--- Suunan kasutaja tagasi:\n    %v\n", ru)
 
 	// Suuna kasutaja tagasi
 	http.Redirect(w, r, ru, 301)

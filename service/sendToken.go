@@ -52,16 +52,16 @@ func sendIdentityToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println("sendIdentityToken: Saadud päringu keha:")
+	fmt.Printf("sendIdentityToken:\n    Saadud päringu keha:\n")
 	fmt.Println(string(b))
 	m, err := url.ParseQuery(string(b))
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
-	for k, v := range m { 
-    fmt.Printf("key[%s] value[%s]\n", k, v)
-}
+	for k, v := range m {
+		fmt.Printf("    %s: %s\n", k, v)
+	}
 
 	// Võta identsustõendile vajalikud andmed (v) mälus hoitavast
 	// identsustõendite andmete hoidlast.
@@ -138,7 +138,7 @@ func sendIdentityToken(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json;charset=utf-8")
 	//	w.Write([]byte(tokenString))
 	w.Write(saadetis)
-	fmt.Println("sendToken: Identsustõend väljastatud")
+	fmt.Printf("sendToken:\n    Identsustõend väljastatud\n")
 }
 
 // jwt teegi näide: https://github.com/dgrijalva/jwt-go/issues/141

@@ -99,10 +99,8 @@ func personCodeToDoB(c string) (dob string, err error) {
 		var e []rune
 		if string(r[0:2]) == "EE" {
 			e = r[2:]
-			fmt.Println("eesliitega")
 		} else {
 			e = r
-			fmt.Println("eesliiteta")
 		}
 		// Leia sajand
 		var s string

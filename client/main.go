@@ -76,7 +76,7 @@ func loginUser(w http.ResponseWriter, r *http.Request) {
 		"response_type=code&" +
 		"client_id=1"
 
-	fmt.Println("loginUser: Saadan autentimispäringu: ", ru)
+	fmt.Printf("\nloginUser:\n    Saadan autentimispäringu:\n    %v\n", ru)
 
 	// Suuna kasutaja TARA-Mock-i.
 	http.Redirect(w, r, ru, 301)
@@ -97,7 +97,7 @@ func autologinUser(w http.ResponseWriter, r *http.Request) {
 		"client_id=1&" +
 		"autologin=36107120334"
 
-	fmt.Println("loginUser: Saadan autentimispäringu: ", ru)
+	fmt.Printf("\nautologinUser:\n    Saadan autentimispäringu:\n    %v\n", ru)
 
 	// Suuna kasutaja TARA-Mock-i.
 	http.Redirect(w, r, ru, 301)
@@ -128,10 +128,10 @@ func finalize(w http.ResponseWriter, r *http.Request) {
 	// t []byte - Identsustõend
 	t, ok := getIdentityToken(getP("code", r))
 	if !ok {
-		fmt.Println("finalize: Identsustõendi pärimine ebaõnnestus")
+		fmt.Println("\nfinalize: Identsustõendi pärimine ebaõnnestus")
 		ps.Success = false
 	} else {
-		fmt.Println("finalize: Saadud identsustõend: ", string(t))
+		fmt.Printf("\nfinalize:\n    Saadud identsustõend:\n    %v\n", string(t))
 		ps.Success = true
 	}
 

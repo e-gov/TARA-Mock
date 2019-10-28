@@ -90,9 +90,8 @@ func getIdentityToken(vk string) (string, bool) {
 
 	// ----------------
 	// Päri allkirja avalik võti
-	fmt.Println("getIdentityToken: Pärin identsustõendi allkirjavõtme")
+	fmt.Printf("\ngetIdentityToken:\n    Pärin identsustõendi allkirjavõtme\n")
 	resp1, err := client.Get(conf.TaraMockKeyEndpoint)
-	// resp1, err := client.Get("https://tara-test.ria.ee/oidc/jwks")
 	if err != nil {
 		log.Fatalln("Viga allkirja avaliku võtme pärimisel: ", err)
 	}
@@ -130,7 +129,7 @@ func getIdentityToken(vk string) (string, bool) {
 	if err != nil {
 		log.Fatalln("getIdentityToken: Viga teisendamisel lestrrat-go/jwx/jwk kujule: ", err)
 	}
-	fmt.Println("getIdentityToken: Saadud võti, kid = ", kSet.Keys[0].KeyID())
+	fmt.Println("    Saadud võti, kid = ", kSet.Keys[0].KeyID())
 	// Materialize() peaks jwk.Key-st tegema *rsa.PublicKey.
 	m, err := kSet.Keys[0].Materialize()
 	if err != nil {
@@ -145,7 +144,7 @@ func getIdentityToken(vk string) (string, bool) {
 	qp := "grant_type=authorization_code" +
 		"&code=" + vk +
 		"&redirect_uri=" + conf.RedirectURI
-	fmt.Printf("getIdentityToken: Pärin identsustõendi: %v\n", qp)	
+	fmt.Printf("--- Pärin identsustõendi: %v\n", qp)
 	var requestBody []byte
 	requestBody = []byte(qp)
 
@@ -165,7 +164,7 @@ func getIdentityToken(vk string) (string, bool) {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	fmt.Println("Saadud vastus: ", string(body))
+	// fmt.Println("    Saadud vastus: ", string(body))
 
 	type IDTokenResponse struct {
 		AccessToken string `json:"access_token"`
@@ -181,23 +180,24 @@ func getIdentityToken(vk string) (string, bool) {
 	if err := json.Unmarshal(body, &IDTR); err != nil {
 		log.Printf("Vastuse JSON parsimine ebaõnnestus: %s", err)
 	}
-	fmt.Println("token_type: ", IDTR.TokenType)
+	// fmt.Println("token_type: ", IDTR.TokenType)
 
 	// Parsi ja kontrolli JWT
 	// Vt: https://stackoverflow.com/questions/41077953/go-language-and-verify-jwt
-	fmt.Println("Üritan kontrollida tõendit")
+	fmt.Println("--- Kontrollin saadud identsustõendit")
 	var p1 jwt.Parser
-	token1, err := p1.Parse(IDTR.IDToken, getKey)
-	if err != nil {
+	_, err2 := p1.Parse(IDTR.IDToken, getKey)
+	if err2 != nil {
 		log.Printf("Identsustõendi kontroll ebaõnnestus %s", err)
 		return "Identsustõendi kontroll ebaõnnestus", true
 	}
-	fmt.Println("Tõendil on väited:")
-	claims1 := token1.Claims.(jwt.MapClaims)
-	for key, value := range claims1 {
-		fmt.Printf("%s\t%v\n", key, value)
-	}
-	fmt.Println("----------")
+	/*
+		fmt.Println("    Tõendil on väited:")
+		claims1 := token1.Claims.(jwt.MapClaims)
+		for key, value := range claims1 {
+			fmt.Printf("    %s\t%v\n", key, value)
+		}
+	*/
 
 	var myClaims MyCustomClaims
 
@@ -210,27 +210,27 @@ func getIdentityToken(vk string) (string, bool) {
 		return "Identsustõendi töötlemine ebaõnnestus", true
 	}
 
-	fmt.Println("Tõendilt loetud:")
-	fmt.Println("  võtme id (kid): ", t.Header["kid"].(string))
-	fmt.Println("  algoritm (alg): ", t.Header["alg"].(string))
-	fmt.Println("  tüüp (typ): ", t.Header["typ"].(string))
+	fmt.Println("--- Tõendilt loetud:")
+	fmt.Println("    võtme id (kid): ", t.Header["kid"].(string))
+	fmt.Println("    algoritm (alg): ", t.Header["alg"].(string))
+	fmt.Println("    tüüp (typ): ", t.Header["typ"].(string))
 	claims := t.Claims.(*MyCustomClaims)
-	fmt.Printf("  state %v\n", claims.State)
-	fmt.Printf("  nonce %v\n", claims.Nonce)
-	fmt.Printf("  autentimismeetod %v\n", claims.Amr)
-	fmt.Printf("  tagatistase %v\n", claims.Acr)
+	fmt.Printf("    state %v\n", claims.State)
+	fmt.Printf("    nonce %v\n", claims.Nonce)
+	fmt.Printf("    autentimismeetod %v\n", claims.Amr)
+	fmt.Printf("    tagatistase %v\n", claims.Acr)
 	fmt.Println("    -- standardväited --")
-	fmt.Printf("  id (jti): %v\n", claims.StandardClaims.Id)
-	fmt.Printf("  väljaandja (iss): %v\n", claims.StandardClaims.Issuer)
-	fmt.Printf("  (aud): %v\n", claims.StandardClaims.Audience)
-	fmt.Printf("  kehtib kuni (exp): %v\n", time.Unix((claims.StandardClaims.ExpiresAt), 0))
-	fmt.Printf("  väljaandmiskp (iat): %v\n", time.Unix((claims.StandardClaims.IssuedAt), 0))
-	fmt.Printf("  mitte enne (nbf): %v\n", time.Unix((claims.StandardClaims.NotBefore), 0))
-	fmt.Printf("  subjekt (sub): %v\n", claims.StandardClaims.Subject)
+	fmt.Printf("    id (jti): %v\n", claims.StandardClaims.Id)
+	fmt.Printf("    väljaandja (iss): %v\n", claims.StandardClaims.Issuer)
+	fmt.Printf("    (aud): %v\n", claims.StandardClaims.Audience)
+	fmt.Printf("    kehtib kuni (exp): %v\n", time.Unix((claims.StandardClaims.ExpiresAt), 0))
+	fmt.Printf("    väljaandmiskp (iat): %v\n", time.Unix((claims.StandardClaims.IssuedAt), 0))
+	fmt.Printf("    mitte enne (nbf): %v\n", time.Unix((claims.StandardClaims.NotBefore), 0))
+	fmt.Printf("    subjekt (sub): %v\n", claims.StandardClaims.Subject)
 	fmt.Println("    -- isiku profiil --")
-	fmt.Printf("  eesnimi %v\n", claims.ProfileAttributes.GivenName)
-	fmt.Printf("  perekonnanimi %v\n", claims.ProfileAttributes.FamilyName)
-	fmt.Printf("  sünniaeg %v\n", claims.ProfileAttributes.DateOfBirth)
+	fmt.Printf("    eesnimi %v\n", claims.ProfileAttributes.GivenName)
+	fmt.Printf("    perekonnanimi %v\n", claims.ProfileAttributes.FamilyName)
+	fmt.Printf("    sünniaeg %v\n", claims.ProfileAttributes.DateOfBirth)
 
 	return claims.StandardClaims.Subject + ", " +
 		claims.ProfileAttributes.GivenName + ", " +

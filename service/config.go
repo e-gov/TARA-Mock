@@ -46,6 +46,6 @@ func loadConf(f string) Config {
 		os.Exit(1)
 	}
 	// Kuva konf-n
-	fmt.Printf("Seadistus laetud: %v\n", conf)
+	fmt.Printf("loadConf:\n    Seadistus laetud: %+v\n", conf)
 	return config
 }

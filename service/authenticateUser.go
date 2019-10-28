@@ -30,9 +30,9 @@ func authenticateUser(w http.ResponseWriter, r *http.Request) {
 
 	r.ParseForm() // Parsi päringuparameetrid.
 	// Kuva kontrolliks mäpi Form kõik elemendid
-	fmt.Println("authenticateUser: Autentimispäringu parameetrid:")
+	fmt.Printf("authenticateUser:\n    Autentimispäringu parameetrid:\n")
 	for k, v := range r.Form {
-		fmt.Printf("  %s: %s\n", k, v)
+		fmt.Printf("    %s: %s\n", k, v)
 	}
 
 	// Automaatautentimine?
@@ -52,8 +52,8 @@ func authenticateUser(w http.ResponseWriter, r *http.Request) {
 		forToken.sub = ik
 		forToken.givenName = "Auto"
 		forToken.familyName = "Maat"
-		// Kas autologin parameetris näidatud isik on etteantute hulgas?
 
+		// Kas autologin parameetris näidatud isik on etteantute hulgas?
 		for _, identity := range identities {
 			if identity.Isikukood == ik {
 				forToken.givenName = identity.Eesnimi
@@ -61,6 +61,9 @@ func authenticateUser(w http.ResponseWriter, r *http.Request) {
 				break
 			}
 		}
+
+		fmt.Printf("--- Automaatautentimine:\n    %s\n    %s\n    %s\n",
+			forToken.sub, forToken.givenName, forToken.familyName)
 
 		forToken.clientID = getPtr("client_id", r)
 		forToken.state = getPtr("state", r)
@@ -71,7 +74,7 @@ func authenticateUser(w http.ResponseWriter, r *http.Request) {
 		idToendid[c] = forToken
 		mutex.Unlock()
 
-		fmt.Println("sendUserBack: Id-tõendi andmed talletatud: ", forToken)
+		fmt.Printf("--- Id-tõendi andmed talletatud:\n    %+v\n", forToken)
 
 		// Moodusta tagasisuunamis-URL
 		ru := getPtr("redirect_uri", r) +
