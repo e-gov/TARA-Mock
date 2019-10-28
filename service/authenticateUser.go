@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
-	"path/filepath"
 )
 
 // authenticateUser võtab vastu klientrakendusest autentimisele
@@ -111,8 +110,7 @@ func authenticateUser(w http.ResponseWriter, r *http.Request) {
 
 	// Loe mall, täida parameetritega ja saada leht sirvikusse.
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	p := filepath.Join("templates", "authenticateUser.html")
-	t, err := template.ParseFiles(p)
+	t, err := template.ParseFiles(conf.AuthenticateUserTmpl)
 	if err != nil {
 		fmt.Fprintf(w, "Unable to load template")
 		return

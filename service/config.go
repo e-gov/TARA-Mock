@@ -21,7 +21,9 @@ type Config struct {
 	// Identsustõendi allkirjavõtme identifikaator
 	Kid string `json:"kid"`
 	// Ettevalmistatud identiteetide fail
-	IdentitiesFile string `json:"identitiesFile"`
+	IdentitiesFile       string `json:"identitiesFile"`
+	AuthenticateUserTmpl string `json:"authenticateUserTmpl"`
+	IndexTmpl            string `json:"indexTmpl"`
 }
 
 // TARA-Mock sisseloetud seadistus.

@@ -138,7 +138,9 @@ Muuda failis `service/config.json` olev vaikeseadistus oma konfiguratsioonile va
 	"idTokenPrivKeyPath": "vault/idtoken.key",
 	"idTokenPubKeyPath": "vault/idtoken.pub",
 	"kid": "taramock",
-	"identitiesFile": "identities.json"
+	"identitiesFile": "identities.json",
+	"authenticateUserTmpl": "templates/authenticateUser.html",
+	"indexTmpl": "templates/index.html"
 }
 ```
 

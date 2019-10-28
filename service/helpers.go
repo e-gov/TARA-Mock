@@ -8,7 +8,6 @@ import (
 	"io"
 	"math/rand"
 	"net/http"
-	"path/filepath"
 	"time"
 )
 
@@ -40,8 +39,7 @@ func landingPage(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "text/html")
 
 	// Loe avalehe mall, täida ja saada sirvikusse.
-	p := filepath.Join("templates", "index.html")
-	t, err := template.ParseFiles(p)
+	t, err := template.ParseFiles(conf.IndexTmpl)
 	if err != nil {
 		fmt.Fprintf(w, "Unable to load template")
 		return
