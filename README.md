@@ -28,6 +28,8 @@ TARA-Mock ei ole mõeldud kasutamiseks toodangus. TARA-Mock ei ole mõeldud ka T
 
 TARA-Mock on kirjutatud Go-s.
 
+TARA-Mock-i kasutatakse muuhulgas Valimiste infosüsteemi testimisel.
+
 ## Kasutusstsenaarium
 
 1) Suunamine autentimisele
