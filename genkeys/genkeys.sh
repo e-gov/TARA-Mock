@@ -1,15 +1,18 @@
 #!/bin/bash
 
-echo "--------------------------"
-echo "Skript moodustab TARA-Mock tööks vajalikud võtmed ja serdid."
-echo "Vt: https://github.com/e-gov/TARA-Mock/blob/master/docs/Turvalisus.md"
+RED='\033[0;31m'
+NC='\033[0m'
 
-echo "--------------------------"
-echo "### NB! subj väärtustes tuleb Git for Windows kasutamisel seada"
-echo "tee-eraldajad: //CN\ ..."
+echo -e "${RED}--- genkeys.sh"
+echo -e "    Skript moodustab TARA-Mock tööks vajalikud võtmed ja serdid."
+echo -e "    Vt: https://github.com/e-gov/TARA-Mock/blob/master/docs/Turvalisus.md"
 
-echo
-echo "### 1 Valmistan CA võtme ja serdi"
+echo -e " "
+echo -e "--- NB! subj väärtustes tuleb Git for Windows kasutamisel seada"
+echo -e "    tee-eraldajad: //CN\ ..."
+
+echo -e " "
+echo -e "--- 1 Valmistan CA võtme ja serdi${NC}"
 openssl req \
   -new \
   -x509 \
@@ -18,17 +21,17 @@ openssl req \
   -out rootCA.pem \
   -nodes \
   -days 1024 \
-  -subj "/C=EE/ST=/L=/O=Arendaja/CN=Arendaja"
+  -subj "/C=EE/ST=/L=/O=TEST-CA/CN=TEST-CA"
 
 # Kuva subject ja issuer
-echo "###   Valmistatud CA sert:"
+echo -e "${RED}--- Valmistatud CA sert:${NC}"
 openssl x509 \
   -in rootCA.pem \
   -noout \
   -subject -issuer
 
-echo
-echo "### 2 Valmistan TARA-Mock HTTPS privaatvõtme ja serdi"
+echo -e "${RED} "
+echo -e "--- 2 Valmistan TARA-Mock HTTPS privaatvõtme ja serdi${NC}"
 # Serditaotlus
 openssl req \
   -new \
@@ -51,15 +54,15 @@ openssl x509 \
   -extfile v3.ext
 
 # Kuva subject ja issuer
-echo
-echo "###   Valmistatud sert:"
+echo -e "${RED} "
+echo -e "--- Valmistatud sert:${NC}"
 openssl x509 \
   -in https.crt \
   -noout \
   -subject -issuer
 
-echo
-echo "### 3 Genereerin identsustõendi allkirjastamise privaat- ja avaliku võtme"
+echo -e "${RED} "
+echo -e "--- 3 Genereerin identsustõendi allkirjastamise privaat- ja avaliku võtme${NC}"
 openssl genrsa \
   -out idtoken.key \
   2048
@@ -67,25 +70,27 @@ openssl rsa \
   -in idtoken.key \
   -pubout > idtoken.pub
 
-echo
-echo "### 4 Eemaldan vanad võtmed ja serdid"
+echo -e "${RED} "
+echo -e "--- 4 Eemaldan vanad võtmed ja serdid${NC}"
 rm -f ../service/vault/*.*
 rm -f ../client/vault/*.*
 
-echo "### 5 Paigaldan võtmed ja serdid TARA-Mock-i"
+echo -e "${RED} "
+echo -e "--- 5 Paigaldan võtmed ja serdid TARA-Mock-i${NC}"
 cp rootCA.pem ../service/vault
 cp https.key ../service/vault
 cp https.crt ../service/vault
 cp idtoken.key ../service/vault
 cp idtoken.pub ../service/vault
 
-echo "### 6 Paigaldan võtmed ja serdid klientrakendusse"
+echo -e "${RED} "
+echo -e "--- 6 Paigaldan võtmed ja serdid klientrakendusse${NC}"
 cp rootCA.pem ../client/vault
 cp https.key ../client/vault
 cp https.crt ../client/vault
 
-echo "###   Võtmed ja serdid genereeritud ja paigaldatud"
-echo "###   Ära unusta sirvikusse usaldusankrut paigaldada"
+echo -e "${RED}--- Võtmed ja serdid genereeritud ja paigaldatud"
+echo -e "--- Ära unusta sirvikusse usaldusankrut paigaldada${NC}"
 
 # -------------------
 # Abiteave
