@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 	"strconv"
 )
@@ -25,7 +25,7 @@ func sendUserBack(w http.ResponseWriter, r *http.Request) {
 	// Genereeri volituskood
 	var c volituskood
 	c = volituskood(randSeq(6))
-	fmt.Printf("sendUserBack:\n    Genereeritud volituskood: %v\n", c)
+	log.Debugf("Generated authorization code/Genereeritud volituskood: %v", c)
 
 	// Kogu identsustõendi koostamiseks ja väljastamiseks vajalikud
 	// andmed.
@@ -34,13 +34,13 @@ func sendUserBack(w http.ResponseWriter, r *http.Request) {
 	// Selgita, millise identiteedi kasutaja valis. Kui valis etteantute
 	// hulgast, siis Form submit saatis elemendi isik=<nr> (0-based).
 	isikunr := getPtr("isik", r)
-	fmt.Printf("    Kasutaja valis isiku: %v\n", isikunr)
+	log.Debugf("    Kasutaja valis isiku: %v", isikunr)
 
 	if isikunr != "" {
 		// Teisenda int-ks
 		i, err := strconv.Atoi(isikunr)
 		if err != nil {
-			fmt.Println("    Viga vormist saadud andmete kasutamisel")
+			log.Errorf("    Viga vormist saadud andmete kasutamisel: %v", err)
 			i = 0 // Kasuta esimest etteantud identiteeti
 		}
 		forToken.sub = identities[i].Isikukood
@@ -63,7 +63,7 @@ func sendUserBack(w http.ResponseWriter, r *http.Request) {
 	idToendid[c] = forToken
 	mutex.Unlock()
 
-	fmt.Printf("--- Id-tõendi andmed talletatud:\n    %+v\n", forToken)
+	log.Debugf("--- Id-tõendi andmed talletatud: %+v", forToken)
 
 	// Moodusta tagasisuunamis-URL
 	ru := returnURI +
@@ -71,7 +71,7 @@ func sendUserBack(w http.ResponseWriter, r *http.Request) {
 		"&state=" + state +
 		"&nonce=" + nonce
 
-	fmt.Printf("--- Suunan kasutaja tagasi:\n    %v\n", ru)
+	log.Debugf("--- Suunan kasutaja tagasi: %v", ru)
 
 	// Suuna kasutaja tagasi
 	http.Redirect(w, r, ru, 301)

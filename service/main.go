@@ -3,9 +3,8 @@ package main
 import (
 	"crypto/rsa"
 	"flag"
-	"fmt"
+	log "github.com/sirupsen/logrus"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"sync"
 
@@ -68,7 +67,7 @@ func main() {
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
 	// Käivita HTTPS server
-	fmt.Printf("** TARA-Mock käivitatud pordil %v **\n", conf.HTTPServerPort)
+	log.Infof("TARA-Mock käivitatud pordil %v", conf.HTTPServerPort)
 	err := http.ListenAndServeTLS(
 		conf.HTTPServerPort,
 		conf.TaraMockCert,

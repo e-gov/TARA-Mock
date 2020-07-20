@@ -2,9 +2,8 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
+	log "github.com/sirupsen/logrus"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"net/url"
 	"time"
@@ -52,15 +51,16 @@ func sendIdentityToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Printf("sendIdentityToken:\n    Saadud päringu keha:\n")
-	fmt.Println(string(b))
+	log.Debugf("ID Token request/Identsustõendi päring: %s", string(b))
 	m, err := url.ParseQuery(string(b))
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
-	for k, v := range m {
-		fmt.Printf("    %s: %s\n", k, v)
+	if log.IsLevelEnabled(log.DebugLevel) {
+		for k, v := range m {
+			log.Debugf("    %s: %s", k, v)
+		}
 	}
 
 	// Võta identsustõendile vajalikud andmed (v) mälus hoitavast
@@ -108,7 +108,7 @@ func sendIdentityToken(w http.ResponseWriter, r *http.Request) {
 	// Create the JWT string
 	tokenString, err := token.SignedString(signKey)
 	if err != nil {
-		log.Printf("Viga veebitõendi allkirjastamisel: %s", err)
+		log.Errorf("Viga veebitõendi allkirjastamisel: %v", err)
 		http.Error(w, err.Error(), 500)
 		return
 	}
@@ -138,7 +138,7 @@ func sendIdentityToken(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json;charset=utf-8")
 	//	w.Write([]byte(tokenString))
 	w.Write(saadetis)
-	fmt.Printf("sendToken:\n    Identsustõend väljastatud\n")
+	log.Debug("ID Token issued/Identsustõend väljastatud")
 }
 
 // jwt teegi näide: https://github.com/dgrijalva/jwt-go/issues/141

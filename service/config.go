@@ -2,7 +2,7 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
+	log "github.com/sirupsen/logrus"
 	"os"
 )
 
@@ -35,17 +35,17 @@ func loadConf(f string) Config {
 	configFile, err := os.Open(f)
 	defer configFile.Close()
 	if err != nil {
-		fmt.Printf("TARA-Mock: Seadistuse lugemine ebaõnnestus. %s\n", err.Error())
+		log.Errorf("TARA-Mock: Seadistuse lugemine ebaõnnestus. %v", err)
 		os.Exit(1)
 	}
 	// Dekodeeri JSON-struktuur
 	jsonParser := json.NewDecoder(configFile)
 	err = jsonParser.Decode(&config)
 	if err != nil {
-		fmt.Printf("TARA-Mock: Seadistuse dekodeerimine ebaõnnestus: %s\n", err)
+		log.Errorf("TARA-Mock: Seadistuse dekodeerimine ebaõnnestus: %v", err)
 		os.Exit(1)
 	}
 	// Kuva konf-n
-	fmt.Printf("loadConf:\n    Seadistus laetud: %+v\n", conf)
+	log.Debugf("Configuration loaded/Seadistus laetud: %+v", conf)
 	return config
 }

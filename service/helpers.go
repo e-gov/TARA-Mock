@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
+	log "github.com/sirupsen/logrus"
 	"html/template"
 	"io"
 	"math/rand"
@@ -41,7 +41,7 @@ func landingPage(w http.ResponseWriter, r *http.Request) {
 	// Loe avalehe mall, täida ja saada sirvikusse.
 	t, err := template.ParseFiles(conf.IndexTmpl)
 	if err != nil {
-		fmt.Fprintf(w, "Unable to load template")
+		log.Errorf("Unable to load template: %v", err)
 		return
 	}
 	t.Execute(w, nil)
@@ -93,7 +93,7 @@ func sendConf(w http.ResponseWriter, r *http.Request) {
 // veateate või edu korral nil.
 func personCodeToDoB(c string) (dob string, err error) {
 	r := []rune(c)
-	fmt.Println("First 2", string(r[0:2]))
+	log.Debugf("First 2", string(r[0:2]))
 	if len(c) > 6 {
 		// Kas eesliide, milles riigikood?
 		var e []rune
