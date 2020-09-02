@@ -69,7 +69,7 @@ func sendConf(w http.ResponseWriter, r *http.Request) {
 	}
 
 	conf := Conf{
-		Issuer:                           "https://" + conf.TaraMockHost,
+		Issuer:                           "https://" + conf.TaraMockHost + conf.HTTPServerPort,
 		ScopesSupported:                  []string{"openid", "idcard", "mid", "banklink", "smartid", "eidas", "eidasonly", "email"},
 		ResponseTypesSupported:           []string{"code"},
 		SubjectTypesSupported:            []string{"public", "pairwise"},
