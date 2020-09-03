@@ -163,6 +163,19 @@ go run -conf <seadistusfail>
 - Kui kasutad TARA-Mock-i instantsi, mis ei ole sinu kontrolli all, siis ära kasuta test-TARA klientrakenduse salasõna; sea salasõnaks muu väärtus; TARA-Mock ei kontrolli salasõna.
 - TARA-Mock-i CA sert usaldusankruks (s.t klientrakendus tuleb panna TARA-Mock-i usaldama).
 
+## Käivitamine kasutades Docker'it
+
+```
+docker-compose up
+```
+
+Vaikimisi eeldatakse, et võtmed ja serdid asuvad repo kaustas `service/vault`. Võtmeid ja serte saab eelnevalt genereerida käivitades käsud:  
+
+```
+docker-compose build --build-arg genkeys="true"
+docker-compose up
+```
+
 ## Klientrakenduse näidis
 
 TARA-Mock-ga kaasasolev klientrakenduse näidis pakub otspunkte:
