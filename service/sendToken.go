@@ -108,7 +108,7 @@ func sendIdentityToken(w http.ResponseWriter, r *http.Request) {
 	// Create the JWT string
 	tokenString, err := token.SignedString(signKey)
 	if err != nil {
-		log.Errorf("Viga veebitõendi allkirjastamisel: %v", err)
+		log.WithError(err).Error("Viga veebitõendi allkirjastamisel!")
 		http.Error(w, err.Error(), 500)
 		return
 	}
@@ -129,7 +129,7 @@ func sendIdentityToken(w http.ResponseWriter, r *http.Request) {
 
 	saadetis, err := json.Marshal(IDTR)
 	if err != nil {
-		log.Printf("Viga veebitõendi väljastamisel: %s", err)
+		log.WithError(err).Error("Viga veebitõendi väljastamisel!")
 		http.Error(w, err.Error(), 500)
 		return
 	}

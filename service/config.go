@@ -24,6 +24,7 @@ type Config struct {
 	IdentitiesFile       string `json:"identitiesFile"`
 	AuthenticateUserTmpl string `json:"authenticateUserTmpl"`
 	IndexTmpl            string `json:"indexTmpl"`
+	LogLevel            string `json:"logLevel"`
 }
 
 // TARA-Mock sisseloetud seadistus.
@@ -35,17 +36,17 @@ func loadConf(f string) Config {
 	configFile, err := os.Open(f)
 	defer configFile.Close()
 	if err != nil {
-		log.Errorf("TARA-Mock: Seadistuse lugemine ebaõnnestus. %v", err)
+		log.WithError(err).Fatal("TARA-Mock: Seadistuse lugemine ebaõnnestus.")
 		os.Exit(1)
 	}
 	// Dekodeeri JSON-struktuur
 	jsonParser := json.NewDecoder(configFile)
 	err = jsonParser.Decode(&config)
 	if err != nil {
-		log.Errorf("TARA-Mock: Seadistuse dekodeerimine ebaõnnestus: %v", err)
+		log.WithError(err).Fatal("TARA-Mock: Seadistuse dekodeerimine ebaõnnestus.")
 		os.Exit(1)
 	}
 	// Kuva konf-n
-	log.Debugf("Configuration loaded/Seadistus laetud: %+v", conf)
+	log.Infof("Configuration loaded/Seadistus laetud: %+v", config)
 	return config
 }

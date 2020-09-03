@@ -49,6 +49,12 @@ func main() {
 	// Loe identiteedid sisse
 	identities = loadIdentities(conf.IdentitiesFile)
 
+	level, err := log.ParseLevel(conf.LogLevel)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.SetLevel(level)
+
 	// Marsruudid
 	// Go-s "/" käsitleb ka need teed, millele oma käsitlejat ei leidu.
 	http.HandleFunc("/", landingPage)
@@ -68,7 +74,7 @@ func main() {
 
 	// Käivita HTTPS server
 	log.Infof("TARA-Mock käivitatud pordil %v", conf.HTTPServerPort)
-	err := http.ListenAndServeTLS(
+	err = http.ListenAndServeTLS(
 		conf.HTTPServerPort,
 		conf.TaraMockCert,
 		conf.TaraMockKey,

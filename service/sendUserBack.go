@@ -40,7 +40,7 @@ func sendUserBack(w http.ResponseWriter, r *http.Request) {
 		// Teisenda int-ks
 		i, err := strconv.Atoi(isikunr)
 		if err != nil {
-			log.Errorf("    Viga vormist saadud andmete kasutamisel: %v", err)
+			log.WithError(err).Error("Viga vormist saadud andmete kasutamisel!")
 			i = 0 // Kasuta esimest etteantud identiteeti
 		}
 		forToken.sub = identities[i].Isikukood

@@ -68,7 +68,7 @@ func authenticateUser(w http.ResponseWriter, r *http.Request) {
 			"sub": forToken.sub,
 			"givenName": forToken.givenName,
 			"familyName": forToken.familyName,
-		}).Debug("Automaatautentimine")
+		}).Debug("--- Automaatautentimine")
 
 		forToken.clientID = getPtr("client_id", r)
 		forToken.state = getPtr("state", r)
@@ -81,7 +81,7 @@ func authenticateUser(w http.ResponseWriter, r *http.Request) {
 
 		log.WithFields(log.Fields{
 			"token": forToken,
-		}).Debug("Id-tõendi andmed talletatud")
+		}).Debug("--- Id-tõendi andmed talletatud")
 
 		// Moodusta tagasisuunamis-URL
 		ru := getPtr("redirect_uri", r) +
