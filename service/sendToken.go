@@ -65,7 +65,10 @@ func sendIdentityToken(w http.ResponseWriter, r *http.Request) {
 
 	// Võta identsustõendile vajalikud andmed (v) mälus hoitavast
 	// identsustõendite andmete hoidlast.
+	mutex.RLock()
 	v, ok := idToendid[volituskood(m.Get("code"))]
+	mutex.RUnlock()
+
 	if !ok {
 		http.Error(w, "Identsustõendile vajalikke andmeid ei leia", 404)
 		return
