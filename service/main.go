@@ -3,9 +3,8 @@ package main
 import (
 	"crypto/rsa"
 	"flag"
-	"fmt"
+	log "github.com/sirupsen/logrus"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"sync"
 
@@ -50,6 +49,12 @@ func main() {
 	// Loe identiteedid sisse
 	identities = loadIdentities(conf.IdentitiesFile)
 
+	level, err := log.ParseLevel(conf.LogLevel)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.SetLevel(level)
+
 	// Marsruudid
 	// Go-s "/" käsitleb ka need teed, millele oma käsitlejat ei leidu.
 	http.HandleFunc("/", landingPage)
@@ -68,8 +73,8 @@ func main() {
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
 	// Käivita HTTPS server
-	fmt.Printf("** TARA-Mock käivitatud pordil %v **\n", conf.HTTPServerPort)
-	err := http.ListenAndServeTLS(
+	log.Infof("TARA-Mock käivitatud pordil %v", conf.HTTPServerPort)
+	err = http.ListenAndServeTLS(
 		conf.HTTPServerPort,
 		conf.TaraMockCert,
 		conf.TaraMockKey,

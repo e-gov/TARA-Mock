@@ -8,5 +8,6 @@
 	"kid": "taramock",
 	"identitiesFile": "identities.json",
 	"authenticateUserTmpl": "templates/authenticateUser.html",
-	"indexTmpl": "templates/index.html"
+	"indexTmpl": "templates/index.html",
+	"logLevel": "INFO"
 }

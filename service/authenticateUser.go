@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	log "github.com/sirupsen/logrus"
 	"html/template"
 	"net/http"
 )
@@ -29,10 +29,12 @@ func authenticateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	r.ParseForm() // Parsi päringuparameetrid.
-	// Kuva kontrolliks mäpi Form kõik elemendid
-	fmt.Printf("authenticateUser:\n    Autentimispäringu parameetrid:\n")
-	for k, v := range r.Form {
-		fmt.Printf("    %s: %s\n", k, v)
+	if log.IsLevelEnabled(log.DebugLevel) {
+		// Kuva kontrolliks mäpi Form kõik elemendid
+		log.Debug("Authentication request parameters/Autentimispäringu parameetrid:")
+		for k, v := range r.Form {
+			log.Debugf("    %s: %s", k, v)
+		}
 	}
 
 	// Automaatautentimine?
@@ -62,8 +64,11 @@ func authenticateUser(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		fmt.Printf("--- Automaatautentimine:\n    %s\n    %s\n    %s\n",
-			forToken.sub, forToken.givenName, forToken.familyName)
+		log.WithFields(log.Fields{
+			"sub": forToken.sub,
+			"givenName": forToken.givenName,
+			"familyName": forToken.familyName,
+		}).Debug("--- Automaatautentimine")
 
 		forToken.clientID = getPtr("client_id", r)
 		forToken.state = getPtr("state", r)
@@ -74,7 +79,9 @@ func authenticateUser(w http.ResponseWriter, r *http.Request) {
 		idToendid[c] = forToken
 		mutex.Unlock()
 
-		fmt.Printf("--- Id-tõendi andmed talletatud:\n    %+v\n", forToken)
+		log.WithFields(log.Fields{
+			"token": forToken,
+		}).Debug("--- Id-tõendi andmed talletatud")
 
 		// Moodusta tagasisuunamis-URL
 		ru := getPtr("redirect_uri", r) +
@@ -115,7 +122,7 @@ func authenticateUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	t, err := template.ParseFiles(conf.AuthenticateUserTmpl)
 	if err != nil {
-		fmt.Fprintf(w, "Unable to load template")
+		log.Debug("Unable to load template")
 		return
 	}
 	t.Execute(w, mp)
