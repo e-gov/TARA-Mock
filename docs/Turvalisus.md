@@ -39,7 +39,7 @@ Soovi korral võib kasutada TARA-Mock koodirepo koosseisus (kaustas `genkeys`) o
 
 Muu konfiguratsiooni puhul saab skripti muuta, kirjutades sisse õiged hostinimed, `O=` ja `CN=` vaartused ja tehes võtmete ning sertide kaustadesse paigutamise muude vahenditega. NB! Skriptis on failiteed Windows-i nõuete kohaselt. Linux-i kasutamisel muuta vastavalt.
 
-Skriptis täidetakse järgmised sammud:
+Skriptis `genkeys.sh` täidetakse järgmised sammud:
 
 1 Sertifitseerimisasutuse (CA) privaatvõtme ja serdi valmistamine. Valmistatakse failid: `rootCA.key` (privaatvõti) ja `rootCA.pem` (sert). Samuti moodustatakse fail `rootCA.srl`, milles CA peab arvestust sertide seerianumbrite üle).
 
@@ -55,7 +55,7 @@ openssl req \
   -subj "//C=EE\ST=\L=\O=Arendaja\CN=Arendaja"
 ```
 
-Kaitske CA privaatvõtit.
+Tähelepanu! Kaitske CA privaatvõtit.
 
 2 TARA-Mock HTTPS serveri privaatvõtme (`https.key`) ja serdi (`https.crt`) valmistamine. Kuna TARA-Mock HTTPS server teenindab ka sirvikuid, siis on vaja serdile kantav väli `subjectAltName` määratleda eraldi failis `v3.ext`. Kui paigalduskohaks ei ole `localhost`, siis tuleb failis `v3.ext` seada õige hostinimi. 
 
@@ -93,6 +93,7 @@ openssl rsa \
   -in idtoken.key \
   -pubout > idtoken.pub
 ```
+
 4 Võtmete ja sertide paigaldamine TARA-Mock-i ja klientrakendusse (vastavalt kaustadesse `service/vault` ja `client/vault`).
 
 ## Turvalisus sirvikus

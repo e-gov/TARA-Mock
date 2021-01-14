@@ -10,6 +10,9 @@ echo -e "    Vt: https://github.com/e-gov/TARA-Mock/blob/master/docs/Turvalisus.
 echo -e " "
 echo -e "--- NB! subj väärtustes tuleb Git for Windows kasutamisel seada"
 echo -e "    tee-eraldajad: //CN\ ..."
+echo -e " "
+echo -e "    NB! Skript ei tööta WSL-s (Windows Subsystem for Linux)"
+echo -e " "
 
 echo -e " "
 echo -e "--- 1 Valmistan CA võtme ja serdi${NC}"

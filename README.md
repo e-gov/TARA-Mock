@@ -53,7 +53,6 @@ TARA-Mock on tehtud rida lihtsustusi ja jäetud ära kontrolle:
 - turvaelemendid (`state` ja `nonce`), samuti `return_uri`, antakse ühes sammus edasi HTML vormi peidetud väljadena
 - puudub päringuvõltsimise kaitse (CSRF). Märkus: Kuna TARA-Mock-s saab sisse logida suvalise kasutajana, siis ei ole kaitsel ka mõtet.
 - juhusõned genereeritakse tavalise (`math/rand`), mitte krüptograafilise juhuarvugeneraatoriga (`crypto/rand`)
-- minimaalne logimine; TARA-Mock väljastab mõningast logiteavet konsoolile
 - klientrakenduse salasõna ei kontrollita
 - parameetreid `scope` ja `response_type` ei kontrollita
 - parameetrid `ui_locales` ei kontrollita ega toetata; TARA-Mock-i kasutajaliides on eesti keeles
@@ -75,6 +74,8 @@ Mida siis kontrollitakse?
 - `return_uri` peab olema kehtiv - muidu ei jõua kasutaja rakendusse tagasi
 - vormikohaselt täidetakse kogu TARA kasutusvoog (v.a UserInfo otspunkt)
 - identsustõend allkirjastatakse, allkirja kontrollimise võti on võtmeotspunktis
+- TARA-Mock teeb mõningaid kontrolle, logib konsoolile
+
 
 ## Kasutamine
 
@@ -109,7 +110,9 @@ go run . -conf ../../TARA-Mock-conf/config.json
 
 TARA-Mock-is määrab kasutaja ise identiteedi (isikukoodi, ees- ja perekonnanime), millega ta autenditakse. Selleks ta kas valib etteantud identiteetide hulgast või sisestab ise identiteeti.
 
-Tarkvaraga on kaasas 3 etteantud identiteeti. Etteantud identiteetide muutmiseks redigeeri faili `service/identities.json`:
+Tarkvaraga on kaasas 3 etteantud identiteeti. Etteantud identiteetide muutmiseks redigeeri faili `service/identities.json`.
+
+Vväljavõte failist `service/identities.json`:
 
 ```json
 [
@@ -118,7 +121,6 @@ Tarkvaraga on kaasas 3 etteantud identiteeti. Etteantud identiteetide muutmiseks
     "eesnimi": "Eesnimi1",
     "perekonnanimi": "Perekonnanimi1"
   },
-...
 ```
 
 TARA väljastab identsustõendis, väiteks `sub` isikukoodi koos eesliitega, milles on riigikood, nt `EE`. Kui soovid samamoodi, siis lisa ise isikukoodi ette `EE`.
@@ -142,9 +144,12 @@ Muuda failis `service/config.json` olev vaikeseadistus oma konfiguratsioonile va
 	"kid": "taramock",
 	"identitiesFile": "identities.json",
 	"authenticateUserTmpl": "templates/authenticateUser.html",
-	"indexTmpl": "templates/index.html"
+  "indexTmpl": "templates/index.html",
+  "logLevel": "INFO"
 }
 ```
+
+`logLevel` on TARA-Mock-is tehtava logimise tase. Logitase määratakse TARA-Mock seadistuses, väljas `logLevel` või kasutatakse vaikimisi logitaset. Kasutada saab logitasemeid (detailsemalt kompaktsemale):  `TRACE`, `DEBUG`, `INFO`, `WARNING`, `ERROR`, `FATAL` ja `PANIC`. Vaikimisi, s.t kui logitaset ei ole seadistusfailis määratud, samuti kui seadistusfailis määratu parsimine ebaõnnestub, kasutab TARA-Mock logitaset `INFO`.
 
 6 Valmista ja paigalda võtmed ja serdid, vt [Turvalisus](docs/Turvalisus.md)
 

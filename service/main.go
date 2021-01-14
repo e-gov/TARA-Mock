@@ -3,10 +3,11 @@ package main
 import (
 	"crypto/rsa"
 	"flag"
-	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
 	"sync"
+
+	log "github.com/sirupsen/logrus"
 
 	// Identsustõendi koostamiseks ja allkirjastamiseks
 	// Dok-n: https://godoc.org/github.com/dgrijalva/jwt-go
@@ -51,7 +52,9 @@ func main() {
 
 	level, err := log.ParseLevel(conf.LogLevel)
 	if err != nil {
-		log.Fatal(err)
+		//	Sea vaikimisi (logrus) logitasemeks INFO.
+		log.SetLevel(log.InfoLevel)
+		// https://qna.habr.com/q/712091 eeskujul.
 	}
 	log.SetLevel(level)
 

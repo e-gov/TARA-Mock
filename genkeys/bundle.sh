@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Skript ei tööta Git for Windows ega WSL-is. Seal on praktiline ümbertee
+# sisestada openssl käsk käsurealt.
+
 echo "--- bundle.sh"
 echo "Skript TARA-Mock elutukse otspunkti poole sirvikuga pöördumiseks"
 echo "vajaliku sertipaki (PKCS#12 bundle). Pakk on vajalik, sest TARA-Mock"
