@@ -1,4 +1,5 @@
-FROM golang:1.15.1-alpine
+ARG DOCKERHUB_MIRROR
+FROM ${DOCKERHUB_MIRROR}library/golang:1.15.1-alpine
 
 RUN apk update && apk upgrade && \
     apk add --no-cache bash openssl
