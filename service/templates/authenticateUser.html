@@ -5,6 +5,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TARA-Mock</title>
+    <base href="{{ .BaseHref }}" target="_blank">
+
 
     <!-- JQuery -->
     <script src="https://code.jquery.com/jquery.min.js"></script>
@@ -12,7 +14,7 @@
     <!-- Material Design icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-    <link rel="stylesheet" type="text/css" href="/static/styles.css" />
+    <link rel="stylesheet" type="text/css" href="static/styles.css" />
 
   </head>
 
@@ -38,7 +40,7 @@
     </div>
     <div class="Isikuvalikuala">
       <div class="paan">
-        <form action="/back" method="POST">
+        <form action="back" method="POST">
           <!-- Identiteedid (isikud), radio button rühmana -->
           <!-- 
             checked pannakse igale, kehtima jääb viimane.
