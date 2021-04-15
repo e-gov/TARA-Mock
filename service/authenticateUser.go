@@ -65,8 +65,8 @@ func authenticateUser(w http.ResponseWriter, r *http.Request) {
 		}
 
 		log.WithFields(log.Fields{
-			"sub":        forToken.sub,
-			"givenName":  forToken.givenName,
+			"sub": forToken.sub,
+			"givenName": forToken.givenName,
 			"familyName": forToken.familyName,
 		}).Debug("--- Automaatautentimine")
 
