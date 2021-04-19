@@ -6,7 +6,8 @@ TARA-Mock on teenus, mis teeb TARA autentimise suvalise testkasutajaga, kui vaja
 [Kasutusstsenaarium](#kasutusstsenaarium) · 
 [Lihtsustused](#lihtsustused) · 
 [Kasutamine](#kasutamine) · 
-[Paigaldamine](#paigaldamine) · 
+[Paigaldamine](#paigaldamine-ja-seadistamine) · 
+[Käitamine Docker-ga](#käitamine-docker-ga) · 
 [Klientrakenduse näidis](#klientrakenduse-näidis) · 
 [Turvalisus](docs/Turvalisus.md)
 
@@ -92,7 +93,7 @@ Nt TARA-Mock kasutamisel oma masinas: `https://localhost:8080/health`.
 
 Otspunktide poole pöördumine on samasugune TARA (või test-TARA) poole pöördumisega, ühe täiendusega: automaatautentimist soovides tuleb autentimisele suunamise päringus (`/oidc/authorize`) lisada query-parameeter `autologin=<isikukood>`. TARA-Mock kontrollib, kas isikukoodiga isik on etteantud identiteetide hulgas; kui ei ole, siis väljastab identsutõendi isikule `Auto Maat`.
 
-## Paigaldamine
+## Paigaldamine ja seadistamine
 
 1 Masinas peab olema paigaldatud Go, versioon 1.12 või hilisem.
 
@@ -169,13 +170,13 @@ go run -conf <seadistusfail>
 - Kui kasutad TARA-Mock-i instantsi, mis ei ole sinu kontrolli all, siis ära kasuta test-TARA klientrakenduse salasõna; sea salasõnaks muu väärtus; TARA-Mock ei kontrolli salasõna.
 - TARA-Mock-i CA sert usaldusankruks (s.t klientrakendus tuleb panna TARA-Mock-i usaldama).
 
-## Käivitamine kasutades Docker'it
+## Käitamine Docker-ga
 
 ```
 docker-compose up
 ```
 
-Vaikimisi eeldatakse, et võtmed ja serdid asuvad repo kaustas `service/vault`. Võtmeid ja serte saab eelnevalt genereerida käivitades käsud:  
+Vaikimisi eeldatakse, et võtmed ja serdid asuvad repo kaustas `service/vault`. Võtmeid ja serte saab eelnevalt genereerida, käivitades käsud:  
 
 ```
 docker-compose build --build-arg genkeys="true"
