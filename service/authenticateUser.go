@@ -112,10 +112,12 @@ func authenticateUser(w http.ResponseWriter, r *http.Request) {
 	type templateParams struct {
 		Request    OidcParams
 		Identities []Identity
+		BaseHref   string
 	}
 	mp := templateParams{
 		Request:    pr,
 		Identities: identities,
+		BaseHref:   conf.BaseHref,
 	}
 
 	// Loe mall, täida parameetritega ja saada leht sirvikusse.

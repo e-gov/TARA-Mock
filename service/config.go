@@ -10,6 +10,7 @@ import (
 type Config struct {
 	TaraMockHost   string `json:"taraMockHost"`
 	HTTPServerPort string `json:"httpServerPort"`
+	BaseHref       string `json:"baseHref"`
 	// TARA-Mock-i HTTPS sert
 	TaraMockCert string `json:"taraMockCert"`
 	// TARA-Mock-i HTTPS privaatvõti
@@ -24,7 +25,7 @@ type Config struct {
 	IdentitiesFile       string `json:"identitiesFile"`
 	AuthenticateUserTmpl string `json:"authenticateUserTmpl"`
 	IndexTmpl            string `json:"indexTmpl"`
-	LogLevel            string `json:"logLevel"`
+	LogLevel             string `json:"logLevel"`
 }
 
 // TARA-Mock sisseloetud seadistus.

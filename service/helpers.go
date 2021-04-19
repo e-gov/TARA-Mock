@@ -38,13 +38,21 @@ func getPtr(p string, r *http.Request) string {
 func landingPage(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "text/html")
 
+	type templateParams struct {
+		BaseHref string
+	}
+
+	mp := templateParams{
+		BaseHref: conf.BaseHref,
+	}
+
 	// Loe avalehe mall, täida ja saada sirvikusse.
 	t, err := template.ParseFiles(conf.IndexTmpl)
 	if err != nil {
 		log.WithError(err).Error("Unable to load template!")
 		return
 	}
-	t.Execute(w, nil)
+	t.Execute(w, mp)
 }
 
 // sendConf saadab OpenID Connect seadistuse (otspunkt
