@@ -112,7 +112,7 @@ TARA-Mock-is määrab kasutaja ise identiteedi (isikukoodi, ees- ja perekonnanim
 
 Tarkvaraga on kaasas 3 etteantud identiteeti. Etteantud identiteetide muutmiseks redigeeri faili `service/identities.json`.
 
-Vväljavõte failist `service/identities.json`:
+Väljavõte failist `service/identities.json`:
 
 ```json
 [
@@ -129,7 +129,7 @@ Muudatusi saab teha ka hiljem. Siis tuleb TARA-Mock uuesti käivitada.
 
 5 Kontrolli ja vajadusel muuda TARA-Mock-is seadistatud hostinimesid ja porte. Vaikeseadistus on tehtud eeldustel:
 
-- TARA-Mock töötab arendaja masinas (`localhost`), pordil `8080`.
+- TARA-Mock töötab arendaja masinas (`localhost`), pordil `8080`, baas-URL-il `/`.
 
 Muuda failis `service/config.json` olev vaikeseadistus oma konfiguratsioonile vastavaks:
 
@@ -137,6 +137,7 @@ Muuda failis `service/config.json` olev vaikeseadistus oma konfiguratsioonile va
 {
 	"taraMockHost": "localhost",
 	"httpServerPort": ":8080",
+  "baseHref": "/",
 	"taraMockCert": "vault/https.crt",
 	"taraMockKey": "vault/https.key",
 	"idTokenPrivKeyPath": "vault/idtoken.key",
