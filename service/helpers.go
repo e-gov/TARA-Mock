@@ -69,6 +69,7 @@ func sendConf(w http.ResponseWriter, r *http.Request) {
 		ClaimsSupported                  []string `json:"claims_supported"`
 		GrantTypesSupported              []string `json:"grant_types_supported"`
 		IDTokenSigningAlgValuesSupported []string `json:"id_token_signing_alg_values_supported"`
+		TokenEndpointAuthMethodsSupported[]string `json:"token_endpoint_auth_methods_supported"`
 		UILocalesSupported               []string `json:"ui_locales_supported"`
 		TokenEndpoint                    string   `json:"token_endpoint"`
 		UserinfoEndpoint                 string   `json:"userinfo_endpoint"`
@@ -80,11 +81,12 @@ func sendConf(w http.ResponseWriter, r *http.Request) {
 		Issuer:                           "https://" + conf.TaraMockHost + conf.HTTPServerPort,
 		ScopesSupported:                  []string{"openid", "idcard", "mid", "banklink", "smartid", "eidas", "eidasonly", "email"},
 		ResponseTypesSupported:           []string{"code"},
-		SubjectTypesSupported:            []string{"public", "pairwise"},
+		SubjectTypesSupported:            []string{"public"},
 		ClaimTypesSupported:              []string{"normal"},
 		ClaimsSupported:                  []string{"sub", "given_name", "family_name", "date_of_birth", "email", "email_verified"},
 		GrantTypesSupported:              []string{"authorization_code"},
 		IDTokenSigningAlgValuesSupported: []string{"RS256"},
+		TokenEndpointAuthMethodsSupported:[]string{"client_secret_basic"},
 		UILocalesSupported:               []string{"et", "en", "ru"},
 		TokenEndpoint:                    "https://" + conf.TaraMockHost + conf.HTTPServerPort + "/oidc/token",
 		UserinfoEndpoint:                 "https://" + conf.TaraMockHost + conf.HTTPServerPort + "/oidc/profile",
