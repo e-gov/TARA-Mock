@@ -2,8 +2,9 @@ package main
 
 import (
 	"encoding/json"
-	log "github.com/sirupsen/logrus"
 	"os"
+
+	log "github.com/sirupsen/logrus"
 )
 
 // Config on TARA-Mock seadistuse tüüp.
@@ -37,17 +38,21 @@ func loadConf(f string) Config {
 	configFile, err := os.Open(f)
 	defer configFile.Close()
 	if err != nil {
-		log.WithError(err).Fatal("TARA-Mock: Seadistuse lugemine ebaõnnestus.")
+		log.WithError(err).Fatal("** TARA-Mock: Seadistuse lugemine ebaõnnestus.")
 		os.Exit(1)
 	}
 	// Dekodeeri JSON-struktuur
 	jsonParser := json.NewDecoder(configFile)
 	err = jsonParser.Decode(&config)
 	if err != nil {
-		log.WithError(err).Fatal("TARA-Mock: Seadistuse dekodeerimine ebaõnnestus.")
+		log.WithError(err).Fatal("** TARA-Mock: Seadistuse dekodeerimine ebaõnnestus.")
 		os.Exit(1)
 	}
 	// Kuva konf-n
-	log.Infof("Configuration loaded/Seadistus laetud: %+v", config)
+	confJSON, err := json.MarshalIndent(config, "", "  ")
+	if err != nil {
+		log.Fatalf(err.Error())
+	}
+	log.Infof("** TARA-Mock: Seadistus laetud: %s\n", confJSON)
 	return config
 }

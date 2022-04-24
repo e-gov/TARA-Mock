@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"html/template"
 	"io"
-	"log"
 	"net/http"
 	"net/url"
 	"path/filepath"
+
+	log "github.com/sirupsen/logrus"
 )
 
 func main() {
@@ -16,8 +17,9 @@ func main() {
 	cFilePtr := flag.String("conf", "config.json", "Seadistusfaili asukoht")
 	flag.Parse()
 
-	// Loe seadistus sisse
+	// Loe seadistus sisse.
 	conf = loadConf(*cFilePtr)
+	log.Infoln("* Klientrakenduse näidis: Seadistus loetud")
 
 	// Marsruudid
 	http.HandleFunc("/health", healthCheck)
@@ -30,8 +32,8 @@ func main() {
 	fs := http.FileServer(http.Dir("static"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
-	// Käivita HTTPS server
-	log.Println("** Klientrakenduse näidis käivitatud pordil 8081 **")
+	// Käivita HTTPS server.
+	log.Infoln("** Klientrakenduse näidis: Käivitatud pordil 8081")
 	err := http.ListenAndServeTLS(
 		conf.AppPort,
 		conf.AppCert,
@@ -76,10 +78,10 @@ func loginUser(w http.ResponseWriter, r *http.Request) {
 		"response_type=code&" +
 		"client_id=1"
 
-	fmt.Printf("\nloginUser:\n    Saadan autentimispäringu:\n    %v\n", ru)
+	log.Infof("\nloginUser:\n    Saadan autentimispäringu:\n    %v\n", ru)
 
 	// Suuna kasutaja TARA-Mock-i.
-	http.Redirect(w, r, ru, 301)
+	http.Redirect(w, r, ru, http.StatusMovedPermanently) // 301
 }
 
 // autologinUser suunab kasutaja TARA-Mock-i automaatautentimisele.
@@ -97,10 +99,10 @@ func autologinUser(w http.ResponseWriter, r *http.Request) {
 		"client_id=1&" +
 		"autologin=36107120334"
 
-	fmt.Printf("\nautologinUser:\n    Saadan autentimispäringu:\n    %v\n", ru)
+	log.Infof("\nautologinUser:\n    Saadan autentimispäringu:\n    %v\n", ru)
 
 	// Suuna kasutaja TARA-Mock-i.
-	http.Redirect(w, r, ru, 301)
+	http.Redirect(w, r, ru, http.StatusMovedPermanently) // 301
 }
 
 // finalize : 1) võtab TARA-Moc-st tagasi suunatud kasutaja
@@ -128,17 +130,17 @@ func finalize(w http.ResponseWriter, r *http.Request) {
 	// t []byte - Identsustõend
 	t, ok := getIdentityToken(getP("code", r))
 	if !ok {
-		fmt.Println("\nfinalize: Identsustõendi pärimine ebaõnnestus")
+		log.Infoln("\nfinalize: Identsustõendi pärimine ebaõnnestus")
 		ps.Success = false
 	} else {
-		fmt.Printf("\nfinalize:\n    Saadud identsustõend:\n    %v\n", string(t))
+		log.Printf("\nfinalize:\n    Saadud identsustõend:\n    %v\n", string(t))
 		ps.Success = true
 	}
 
 	ps.Isikuandmed = t
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	// Loe lehe "Autenditud" vmall, täida ja saada sirvikusse.
+	// Loe lehe "Autenditud" mall, täida ja saada sirvikusse.
 	p := filepath.Join("templates", "autenditud.html")
 	tpl, err := template.ParseFiles(p)
 	if err != nil {

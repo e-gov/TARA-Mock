@@ -13,8 +13,10 @@ import (
 	"time"
 
 	// Identsustõendi verifitseerimiseks
+	// Asendatud (apr 2022):
 	// Dok-n: https://godoc.org/github.com/dgrijalva/jwt-go
-	"github.com/dgrijalva/jwt-go"
+	// "github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt/v4"
 	// JWK (veebivõtme) toiminguteks
 	// Dok-n: https://godoc.org/github.com/lestrrat-go/jwx
 	"github.com/lestrrat-go/jwx/jwk"
@@ -82,7 +84,7 @@ func getIdentityToken(vk string) (string, bool) {
 		Certificates: []tls.Certificate{cert},
 		RootCAs:      caCertPool,
 	}
-	tlsConfig.BuildNameToCertificate()
+	// tlsConfig.BuildNameToCertificate()
 	transport := &http.Transport{TLSClientConfig: tlsConfig}
 	client := &http.Client{Transport: transport}
 
@@ -145,8 +147,7 @@ func getIdentityToken(vk string) (string, bool) {
 		"&code=" + vk +
 		"&redirect_uri=" + conf.RedirectURI
 	fmt.Printf("--- Pärin identsustõendi: %v\n", qp)
-	var requestBody []byte
-	requestBody = []byte(qp)
+	var requestBody = []byte(qp)
 
 	// Saada POST päring
 	resp, err := client.Post(
