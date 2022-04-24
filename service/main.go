@@ -10,8 +10,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	// Identsustõendi koostamiseks ja allkirjastamiseks
-	// Dok-n: https://godoc.org/github.com/dgrijalva/jwt-go
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt/v4"
 )
 
 // Identsustõendi allkirjastamise RSA võtmepaar
@@ -55,8 +54,11 @@ func main() {
 		//	Sea vaikimisi (logrus) logitasemeks INFO.
 		log.SetLevel(log.InfoLevel)
 		// https://qna.habr.com/q/712091 eeskujul.
+	} else {
+		log.SetLevel(level)
 	}
-	log.SetLevel(level)
+
+	log.Infoln("** TARA-Mock: Seadistus loetud")
 
 	// Marsruudid
 	// Go-s "/" käsitleb ka need teed, millele oma käsitlejat ei leidu.
@@ -77,7 +79,7 @@ func main() {
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
 	// Käivita HTTPS server
-	log.Infof("TARA-Mock käivitatud pordil %v", conf.HTTPServerPort)
+	log.Infof("** TARA-Mock: Käivitatud pordil %v", conf.HTTPServerPort)
 	err = http.ListenAndServeTLS(
 		conf.HTTPServerPort,
 		conf.TaraMockCert,
@@ -90,9 +92,8 @@ func main() {
 
 // readRSAKeys loeb sisse identsustõendi allkirjastamise võtmepaari
 // ja valmistab ette allkirjastamise avaliku võtme otspunkti.
-// Kasutab teeki dgrijalva/jwt-go.
+// Kasutab teeki github.com/golang-jwt/jwt.
 func readRSAKeys() {
-	// Vt: https://github.com/dgrijalva/jwt-go/blob/master/http_example_test.go
 	signBytes, err := ioutil.ReadFile(conf.IDTokenPrivKeyPath)
 	if err != nil {
 		log.Fatal(err)
@@ -113,9 +114,3 @@ func readRSAKeys() {
 		log.Fatal(err)
 	}
 }
-
-// Kaalu allkirjastamispaketi kasutamist:
-// "github.com/lestrrat-go/jwx/jws"
-// Dok-n: https://godoc.org/github.com/lestrrat-go/jwx/jws
-// Alternatiiv on ka: square/go-jose (v3), vt:
-// https://godoc.org/github.com/square/go-jose

@@ -2,8 +2,9 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"os"
+
+	log "github.com/sirupsen/logrus"
 )
 
 // Config on TARA-Mock kliendi seadistuse tüüp.
@@ -36,16 +37,19 @@ var conf Config
 func loadConf(f string) Config {
 	var config Config
 	configFile, err := os.Open(f)
+	if err != nil {
+		log.Printf("TARA-Mock klient: Seadistuse lugemine ebaõnnestus. %s\n", err.Error())
+	}
 	defer configFile.Close()
 	if err != nil {
-		fmt.Printf("TARA-Mock klient: Seadistuse lugemine ebaõnnestus. %s\n", err.Error())
+		log.Printf("TARA-Mock klient: Seadistuse lugemine ebaõnnestus. %s\n", err.Error())
 		os.Exit(1)
 	}
 	// Dekodeeri JSON-struktuur
 	jsonParser := json.NewDecoder(configFile)
 	err = jsonParser.Decode(&config)
 	if err != nil {
-		fmt.Println("TARA-Mock klient: Seadistuse dekodeerimine ebaõnnestus.")
+		log.Println("TARA-Mock klient: Seadistuse dekodeerimine ebaõnnestus.")
 		os.Exit(1)
 	}
 	return config

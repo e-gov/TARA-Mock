@@ -1,20 +1,20 @@
 package main
 
 import (
-	"math/rand"
+	// "math/rand"
 	"net/http"
 )
 
-var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
-
 // randSeq tagastab tähtedest koosneva juhusõne, pikkusega n.
-func randSeq(n int) string {
+/* func randSeq(n int) string {
+	var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 	b := make([]rune, n)
 	for i := range b {
 		b[i] = letters[rand.Intn(len(letters))]
 	}
 	return string(b)
 }
+*/
 
 // getParameter tagastab päringu r parameetri p väärtuse; parameetri puudumisel tagastab "".
 func getP(p string, r *http.Request) string {

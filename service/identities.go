@@ -2,8 +2,9 @@ package main
 
 import (
 	"encoding/json"
-	log "github.com/sirupsen/logrus"
 	"os"
+
+	log "github.com/sirupsen/logrus"
 )
 
 // Identity on autenditav identiteet (isik).
@@ -23,7 +24,7 @@ func loadIdentities(f string) []Identity {
 	// Ava fail
 	fh, err := os.Open(f) // File handle
 	if err != nil {
-		log.WithError(err).Error("TARA-Mock: Ettevalmistatud identiteetide lugemine ebaõnnestus.")
+		log.WithError(err).Error("** TARA-Mock: Ettevalmistatud identiteetide lugemine ebaõnnestus.")
 		os.Exit(1)
 	}
 
@@ -32,12 +33,12 @@ func loadIdentities(f string) []Identity {
 	jsonParser := json.NewDecoder(fh)
 	err = jsonParser.Decode(&d)
 	if err != nil {
-		log.WithError(err).Fatal("TARA-Mock: Ettevalmistatud identiteetide  dekodeerimine ebaõnnestus.")
+		log.WithError(err).Fatal("** TARA-Mock: Ettevalmistatud identiteetide  dekodeerimine ebaõnnestus.")
 		os.Exit(1)
 	}
-	log.Info("Loaded identities/Loetud identiteedid:")
+	log.Infoln("** TARA-Mock: Loaded identities/Loetud identiteedid:")
 	for _, id := range d {
-		log.Infof("    %s, %s, %s", id.Isikukood, id.Eesnimi, id.Perekonnanimi)
+		log.Infof("    %s, %s, %s \n", id.Isikukood, id.Eesnimi, id.Perekonnanimi)
 	}
 	return d
 }
